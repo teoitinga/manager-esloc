@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotEmpty;
+
 @Getter
 @Setter
 @Builder
@@ -14,7 +16,13 @@ import lombok.Setter;
 public class BookDto {
 
 	private Long id;
+
+	@NotEmpty
 	private String author;
+
+	@NotEmpty
 	private String title;
+
+	@NotEmpty
 	private String isbn;
 }

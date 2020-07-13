@@ -4,6 +4,6 @@ import com.jp.eslocapi.api.entities.Book;
 
 public interface BookService {
 
-	Book save(Book any);
+	Book save(Book book);
 
 }

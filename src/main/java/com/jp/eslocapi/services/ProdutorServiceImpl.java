@@ -10,6 +10,10 @@ public class ProdutorServiceImpl implements ProdutorService{
 
 	ProdutorRepository produtorRepository;
 	
+	public ProdutorServiceImpl(ProdutorRepository produtorRepository) {
+		this.produtorRepository = produtorRepository;
+	}
+
 	@Override
 	public Produtor save(Produtor produtor) {
 		return produtorRepository.save(produtor);

@@ -1,5 +1,8 @@
 package com.jp.eslocapi.api.resources;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +22,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.api.repositories.ProdutorRepository;
 import com.jp.eslocapi.dto.ProdutorDto;
 import com.jp.eslocapi.services.ProdutorService;
+import com.jp.eslocapi.services.ProdutorServiceImpl;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -36,6 +41,16 @@ public class ProdutorResourceTest {
 	@MockBean
 	ProdutorService service;	
 	
+
+	@MockBean
+	ProdutorRepository repository;
+
+	@BeforeEach
+	public void setUp(){
+		this.service = new ProdutorServiceImpl(repository);
+	}
+
+
 	@Test
 	@DisplayName("Deve inserir um registro de novo produtor")
 	public void createBookTest() throws Exception {
@@ -62,7 +77,7 @@ public class ProdutorResourceTest {
 		.contentType(MediaType.APPLICATION_JSON)
 		.accept(MediaType.APPLICATION_JSON)
 		.content(json);
-		
+
 		mvc
 			.perform(request)
 			.andExpect(MockMvcResultMatchers.status().isCreated())
@@ -70,12 +85,26 @@ public class ProdutorResourceTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("nome").value(dto.getNome()))
 			.andExpect(MockMvcResultMatchers.jsonPath("cpf").value(dto.getCpf()))
 			.andExpect(MockMvcResultMatchers.jsonPath("fone").value(dto.getFone()))
+			.andExpect(status().isCreated())
+
 			;
-			
+
 	}
 	@Test
 	@DisplayName("Deve lançar erro de validação  quando não houver dados suficientes para criação de um novo livro")
-	public void createInvalidBookTest() {
-		
+	public void createInvalidBookTest() throws Exception{
+
+        String json = new ObjectMapper().writeValueAsString(new ProdutorDto());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .post(this.PRODUTOR_API)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+                .andExpect(status().isBadRequest())
+                //.andExpect( jsonPath("errors", Matchers.hasSize(3)))
+        ;
 	}
 }

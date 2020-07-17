@@ -2,19 +2,16 @@ package com.jp.eslocapi.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookDto {
-
+public class ProdutorDto {
 	private Long id;
-	private String author;
-	private String title;
-	private String isbn;
+	private String nome;
+	private String cpf;
+	private String fone;
 }

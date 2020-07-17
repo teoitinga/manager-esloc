@@ -18,45 +18,47 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jp.eslocapi.api.entities.Book;
-import com.jp.eslocapi.dto.BookDto;
-import com.jp.eslocapi.services.BookService;
+import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.dto.ProdutorDto;
+import com.jp.eslocapi.services.ProdutorService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest
 @AutoConfigureMockMvc
-public class bookresourceTest {
+public class ProdutorResourceTest {
 	
-	static String BOOK_API = "/api/books";
+	static String PRODUTOR_API = "/api/produtor";
 	
 	@Autowired
 	MockMvc mvc;
 	
 	@MockBean
-	BookService service;	
+	ProdutorService service;	
 	
 	@Test
-	@DisplayName("Deve criar um novo livro")
+	@DisplayName("Deve inserir um registro de novo produtor")
 	public void createBookTest() throws Exception {
-		BookDto dto = BookDto.builder().
-				author("João Paulo")
-				.title("Meu livro")
-				.isbn("1213221")
-				.build();
-		Book savedBook = Book.builder()
-				.id(10L)
-				.author("João Paulo")
-				.title("Meu livro")
-				.isbn("1213221")
+		
+		ProdutorDto dto = ProdutorDto.builder()
+				.nome("João Paulo")
+				.cpf("04459471604")
+				.fone("33999065029")
 				.build();
 		
-		BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
+		Produtor savedProdutor = Produtor.builder()
+				.id(10L)
+				.nome("João Paulo")
+				.cpf("04459471604")
+				.fone("33999065029")
+				.build();
+		
+		BDDMockito.given(service.save(Mockito.any(Produtor.class))).willReturn(savedProdutor);
 
 		String json = new ObjectMapper().writeValueAsString(dto);
-		
+
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-		.post(this.BOOK_API)
+		.post(PRODUTOR_API)
 		.contentType(MediaType.APPLICATION_JSON)
 		.accept(MediaType.APPLICATION_JSON)
 		.content(json);
@@ -65,9 +67,9 @@ public class bookresourceTest {
 			.perform(request)
 			.andExpect(MockMvcResultMatchers.status().isCreated())
 			.andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
-			.andExpect(MockMvcResultMatchers.jsonPath("title").value(dto.getTitle()))
-			.andExpect(MockMvcResultMatchers.jsonPath("author").value(dto.getAuthor()))
-			.andExpect(MockMvcResultMatchers.jsonPath("isbn").value(dto.getIsbn()))
+			.andExpect(MockMvcResultMatchers.jsonPath("nome").value(dto.getNome()))
+			.andExpect(MockMvcResultMatchers.jsonPath("cpf").value(dto.getCpf()))
+			.andExpect(MockMvcResultMatchers.jsonPath("fone").value(dto.getFone()))
 			;
 			
 	}

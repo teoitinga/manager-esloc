@@ -29,7 +29,7 @@ public class ProdutorServiceTest {
     }
 
     @Test
-    @DisplayName("Deve salvar o registro de livro")
+    @DisplayName("Deve salvar o registro de novo produtor")
     public void saveBookTest(){
         //cenario
         Produtor produtor = Produtor.builder()

@@ -21,9 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Produtor;
 import com.jp.eslocapi.api.repositories.ProdutorRepository;
-import com.jp.eslocapi.dto.ProdutorDto;
 import com.jp.eslocapi.services.ProdutorService;
 import com.jp.eslocapi.services.ProdutorServiceImpl;
 

@@ -1,4 +1,4 @@
-package com.jp.eslocapi.dto;
+package com.jp.eslocapi.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

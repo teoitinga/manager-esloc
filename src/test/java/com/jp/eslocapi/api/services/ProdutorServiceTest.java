@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -16,12 +17,13 @@ import com.jp.eslocapi.services.ProdutorService;
 import com.jp.eslocapi.services.ProdutorServiceImpl;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 public class ProdutorServiceTest {
 
     ProdutorService produtorService;
     
-    ProdutorRepository repository;
+	@MockBean
+	ProdutorRepository repository;
 
     @BeforeEach
     public void setUp(){

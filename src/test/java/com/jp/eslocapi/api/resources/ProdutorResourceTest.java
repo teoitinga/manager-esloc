@@ -28,7 +28,7 @@ import com.jp.eslocapi.services.ProdutorService;
 import com.jp.eslocapi.services.ProdutorServiceImpl;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("test")
+@ActiveProfiles("dev")
 @WebMvcTest
 @AutoConfigureMockMvc
 public class ProdutorResourceTest {
@@ -40,7 +40,6 @@ public class ProdutorResourceTest {
 	
 	@MockBean
 	ProdutorService service;	
-	
 
 	@MockBean
 	ProdutorRepository repository;

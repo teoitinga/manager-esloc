@@ -1,6 +1,11 @@
 package com.jp.eslocapi.api.resources;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.api.exceptions.ApiErrors;
+import com.jp.eslocapi.exceptions.BusinessException;
 import com.jp.eslocapi.services.ProdutorService;
 
 @RestController
@@ -23,7 +30,9 @@ public class ProdutorController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ProdutorDto create(@RequestBody ProdutorDto dto) {
+	public ProdutorDto create(@Valid @RequestBody ProdutorDto dto) {
+		
+		System.out.println("DTO: " + dto.toString());
 		
 		Produtor toSaved = Produtor.builder()
 				.nome(dto.getNome())
@@ -40,4 +49,20 @@ public class ProdutorController {
 				.build();
 		return response;
 	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ApiErrors handleValidationsException(MethodArgumentNotValidException ex) {
+
+		BindingResult resultErrors = ex.getBindingResult();
+		
+		return new ApiErrors(resultErrors);
+	}
+	@ExceptionHandler(BusinessException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ApiErrors handleBusinessException(BusinessException ex) {
+		
+		return new ApiErrors(ex);
+	}
+
 }

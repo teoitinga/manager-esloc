@@ -20,13 +20,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.exceptions.BusinessException;
 import com.jp.eslocapi.services.ProdutorService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @WebMvcTest
 @AutoConfigureMockMvc
-public class ProdutorResourceTest {
+public class ProdutorControllerTest {
 	
 	static String PRODUTOR_API = "/api/v1/produtores";
 	
@@ -35,16 +36,12 @@ public class ProdutorResourceTest {
 	
 	@MockBean
 	ProdutorService service;
-	
+
 	@Test
 	@DisplayName("Deve criar um registro de novo produtor com sucesso.")
 	public void createTest() throws Exception {
 		
-		ProdutorDto dto = ProdutorDto.builder()
-				.nome("João Paulo")
-				.cpf("04459471604")
-				.fone("33999065029")
-				.build()
+		ProdutorDto dto = createNewProdutor()
 				;
 		
 		Produtor savedProdutor = Produtor.builder()
@@ -63,7 +60,7 @@ public class ProdutorResourceTest {
 		.post(PRODUTOR_API)
 		.contentType(MediaType.APPLICATION_JSON)
 		.accept(MediaType.APPLICATION_JSON).content(json);
-		
+
 		mvc.perform(request)
 		.andExpect(MockMvcResultMatchers.status().isCreated())
 		.andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
@@ -72,10 +69,57 @@ public class ProdutorResourceTest {
 		.andExpect(MockMvcResultMatchers.jsonPath("fone").value("33999065029"))
 		;
 	}
+	private ProdutorDto createNewProdutor() {
+		return ProdutorDto.builder()
+				.nome("João Paulo")
+				.cpf("04459471604")
+				.fone("33999065029")
+				.build();
+	}
 	@Test
 	@DisplayName("Deve lançar erro de validação quando houve erros de validação ao criar um registro de novo produtor.")
-	public void createInvalidTest() {
+	public void createInvalidTest() throws Exception {
 		
+		ProdutorDto dto;
+
+		dto = new ProdutorDto();
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
+				
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+		.post(PRODUTOR_API)
+		.contentType(MediaType.APPLICATION_JSON)
+		.accept(MediaType.APPLICATION_JSON).content(json);
+
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isBadRequest())
+		.andExpect(MockMvcResultMatchers.jsonPath("errors", org.hamcrest.Matchers.hasSize(3)))
+		;
+	}
+	@Test
+	@DisplayName("Deve lançar erro ao tentar cadastra produtor com cpf existente.")
+	public void createProdutorWithDuplicatedCpf()  throws Exception {
+		ProdutorDto dto;
+
+		dto = createNewProdutor();
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
+		
+		String errorMessage = "Este cpf já existe";
+		BDDMockito.given(service.save(Mockito.any(Produtor.class)))
+					.willThrow(new BusinessException(errorMessage));		
+	
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+		.post(PRODUTOR_API)
+		.contentType(MediaType.APPLICATION_JSON)
+		.accept(MediaType.APPLICATION_JSON).content(json);
+
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isBadRequest())
+		.andExpect(MockMvcResultMatchers.jsonPath("errors", org.hamcrest.Matchers.hasSize(1)))
+		.andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(errorMessage))
+		;
+
 	}
 
 }

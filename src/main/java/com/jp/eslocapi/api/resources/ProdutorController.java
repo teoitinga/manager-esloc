@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Produtor;
 import com.jp.eslocapi.api.exceptions.ApiErrors;
+import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.exceptions.BusinessException;
 import com.jp.eslocapi.services.ProdutorService;
 
@@ -32,8 +35,6 @@ public class ProdutorController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ProdutorDto create(@Valid @RequestBody ProdutorDto dto) {
 		
-		System.out.println("DTO: " + dto.toString());
-		
 		Produtor toSaved = Produtor.builder()
 				.nome(dto.getNome())
 				.cpf(dto.getCpf())
@@ -49,7 +50,21 @@ public class ProdutorController {
 				.build();
 		return response;
 	}
-	
+	@GetMapping("{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public ProdutorDto getProdutor(@PathVariable Long id) {
+		
+		Produtor toSaved = service.getById(id);
+		
+		ProdutorDto response = ProdutorDto.builder()
+				.id(toSaved.getId())
+				.nome(toSaved.getNome())
+				.cpf(toSaved.getCpf())
+				.fone(toSaved.getFone())
+				.build();
+		
+		return response;
+	}
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ApiErrors handleValidationsException(MethodArgumentNotValidException ex) {
@@ -61,6 +76,12 @@ public class ProdutorController {
 	@ExceptionHandler(BusinessException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ApiErrors handleBusinessException(BusinessException ex) {
+		
+		return new ApiErrors(ex);
+	}
+	@ExceptionHandler(ProdutorNotFound.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ApiErrors handleBusinessException(ProdutorNotFound ex) {
 		
 		return new ApiErrors(ex);
 	}

@@ -1,5 +1,9 @@
 package com.jp.eslocapi.api.resources;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.exceptions.BusinessException;
 import com.jp.eslocapi.services.ProdutorService;
 
@@ -77,7 +82,7 @@ public class ProdutorControllerTest {
 				.build();
 	}
 	@Test
-	@DisplayName("Deve lançar erro de validação quando houve erros de validação ao criar um registro de novo produtor.")
+	@DisplayName("Deve lançar erro de validação quando houve erros ao criar um registro de novo produtor.")
 	public void createInvalidTest() throws Exception {
 		
 		ProdutorDto dto;
@@ -97,7 +102,7 @@ public class ProdutorControllerTest {
 		;
 	}
 	@Test
-	@DisplayName("Deve lançar erro ao tentar cadastra produtor com cpf existente.")
+	@DisplayName("Deve lançar erro ao tentar cadastrar produtor com cpf existente.")
 	public void createProdutorWithDuplicatedCpf()  throws Exception {
 		ProdutorDto dto;
 
@@ -120,6 +125,53 @@ public class ProdutorControllerTest {
 		.andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(errorMessage))
 		;
 
+	}
+	@Test
+	@DisplayName("Deve obter informações do produtor.")
+	public void getProdutorDetailTest() throws Exception {
+		//cenário (given)
+		Long id = 10L;
+		Produtor dto = Produtor.builder()
+				.id(id)
+				.cpf(createNewProdutor().getCpf())
+				.nome(createNewProdutor().getNome())
+				.fone(createNewProdutor().getFone())
+				.build();
+		
+		BDDMockito.given(service.getById(id)).willReturn(dto);
+		
+		//execução (when)
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+		.get(PRODUTOR_API + "/" + id)
+		.accept(MediaType.APPLICATION_JSON);
+		
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
+		.andExpect(MockMvcResultMatchers.jsonPath("nome").value("João Paulo"))
+		.andExpect(MockMvcResultMatchers.jsonPath("cpf").value("04459471604"))
+		.andExpect(MockMvcResultMatchers.jsonPath("fone").value("33999065029"))
+		;		
+	}
+	@Test
+	@DisplayName("Deve retornar produtor não registrado quando o não houver cadastro do mesmo.")
+	public void produtorNotFound() throws Exception {
+		//cenário (given)
+		
+		BDDMockito.given(service.getById(Mockito.anyLong())).willThrow(new ProdutorNotFound());
+		
+		String id = "1";
+		String errorMessage = "Produtor não registrado no banco de dados.";
+		
+		//execução (when)
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+		.get(PRODUTOR_API + "/" + id )
+		.accept(MediaType.APPLICATION_JSON);
+		
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isNotFound())
+		.andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(errorMessage))
+		;		
 	}
 
 }

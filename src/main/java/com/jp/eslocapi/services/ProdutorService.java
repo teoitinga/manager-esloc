@@ -6,4 +6,6 @@ public interface ProdutorService {
 
 	Produtor save(Produtor produtor);
 
+	Produtor getById(Long id);
+
 }

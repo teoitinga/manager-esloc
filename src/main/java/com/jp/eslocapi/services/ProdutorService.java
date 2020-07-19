@@ -8,4 +8,6 @@ public interface ProdutorService {
 
 	Produtor getById(Long id);
 
+	void delete(Produtor toDeleted);
+
 }

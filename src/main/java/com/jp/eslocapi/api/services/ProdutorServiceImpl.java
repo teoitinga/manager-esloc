@@ -30,4 +30,9 @@ public class ProdutorServiceImpl implements ProdutorService {
 		return repository.findById(id).orElseThrow(()-> new ProdutorNotFound());
 	}
 
+	@Override
+	public void delete(Produtor toDeleted) {
+		repository.delete(toDeleted);
+	}
+
 }

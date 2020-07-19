@@ -173,5 +173,27 @@ public class ProdutorControllerTest {
 		.andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(errorMessage))
 		;		
 	}
+	@Test
+	@DisplayName("Deve deletar um registro de produtor")
+	public void deleteProdutorTest() throws Exception {
+		//cenário (given)
+		Long idProdutor = 1L;
+		
+		Produtor produtor = Produtor.builder()
+				.id(Long.valueOf(idProdutor))
+				.build();
+		BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(produtor);
+		
+		String errorMessage = "Produtor não registrado no banco de dados.";
+		
+		//execução (when)
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.delete(PRODUTOR_API + "/" + idProdutor )
+				.accept(MediaType.APPLICATION_JSON);
+		
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isNoContent())
+		;		
+	}
 
 }

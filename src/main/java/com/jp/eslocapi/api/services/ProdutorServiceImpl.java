@@ -1,7 +1,10 @@
 package com.jp.eslocapi.api.services;
 
+import javax.validation.Valid;
+
 import org.springframework.stereotype.Service;
 
+import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Produtor;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.api.repositories.ProdutorRepository;
@@ -34,5 +37,11 @@ public class ProdutorServiceImpl implements ProdutorService {
 	public void delete(Produtor toDeleted) {
 		repository.delete(toDeleted);
 	}
+
+	@Override
+	public ProdutorDto update(ProdutorDto dto) {
+		return null;
+	}
+
 
 }

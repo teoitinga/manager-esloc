@@ -1,9 +1,5 @@
 package com.jp.eslocapi.api.resources;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Optional;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +42,7 @@ public class ProdutorControllerTest {
 	@DisplayName("Deve criar um registro de novo produtor com sucesso.")
 	public void createTest() throws Exception {
 		
-		ProdutorDto dto = createNewProdutor()
+		ProdutorDto dto = createNewProdutorDto()
 				;
 		
 		Produtor savedProdutor = Produtor.builder()
@@ -74,8 +70,15 @@ public class ProdutorControllerTest {
 		.andExpect(MockMvcResultMatchers.jsonPath("fone").value("33999065029"))
 		;
 	}
-	private ProdutorDto createNewProdutor() {
+	private ProdutorDto createNewProdutorDto() {
 		return ProdutorDto.builder()
+				.nome("João Paulo")
+				.cpf("04459471604")
+				.fone("33999065029")
+				.build();
+	}
+	private Produtor createNewProdutor() {
+		return Produtor.builder()
 				.nome("João Paulo")
 				.cpf("04459471604")
 				.fone("33999065029")
@@ -106,7 +109,7 @@ public class ProdutorControllerTest {
 	public void createProdutorWithDuplicatedCpf()  throws Exception {
 		ProdutorDto dto;
 
-		dto = createNewProdutor();
+		dto = createNewProdutorDto();
 		
 		String json = new ObjectMapper().writeValueAsString(dto);
 		
@@ -130,21 +133,22 @@ public class ProdutorControllerTest {
 	@DisplayName("Deve obter informações do produtor.")
 	public void getProdutorDetailTest() throws Exception {
 		//cenário (given)
-		Long id = 10L;
+		Long id = 1L;
 		Produtor dto = Produtor.builder()
 				.id(id)
-				.cpf(createNewProdutor().getCpf())
-				.nome(createNewProdutor().getNome())
-				.fone(createNewProdutor().getFone())
+				.cpf(createNewProdutorDto().getCpf())
+				.nome(createNewProdutorDto().getNome())
+				.fone(createNewProdutorDto().getFone())
 				.build();
 		
 		BDDMockito.given(service.getById(id)).willReturn(dto);
 		
 		//execução (when)
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-		.get(PRODUTOR_API + "/" + id)
+		.get((String.format("%s%s%x",PRODUTOR_API,"/",id)))
 		.accept(MediaType.APPLICATION_JSON);
 		
+		//verificação
 		mvc.perform(request)
 		.andExpect(MockMvcResultMatchers.status().isOk())
 		.andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
@@ -160,14 +164,15 @@ public class ProdutorControllerTest {
 		
 		BDDMockito.given(service.getById(Mockito.anyLong())).willThrow(new ProdutorNotFound());
 		
-		String id = "1";
+		Long id = 1L;
 		String errorMessage = "Produtor não registrado no banco de dados.";
 		
 		//execução (when)
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-		.get(PRODUTOR_API + "/" + id )
+		.get((String.format("%s%s%x",PRODUTOR_API,"/",id)))
 		.accept(MediaType.APPLICATION_JSON);
-		
+
+		//verificação
 		mvc.perform(request)
 		.andExpect(MockMvcResultMatchers.status().isNotFound())
 		.andExpect(MockMvcResultMatchers.jsonPath("errors[0]").value(errorMessage))
@@ -184,15 +189,100 @@ public class ProdutorControllerTest {
 				.build();
 		BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(produtor);
 		
-		String errorMessage = "Produtor não registrado no banco de dados.";
+		//execução (when)
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.delete(String.format("%s%s%x",PRODUTOR_API,"/",idProdutor))
+				.accept(MediaType.APPLICATION_JSON);
+
+		//verificação
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isNoContent())
+		;		
+	}
+	@Test
+	@DisplayName("Deve atualizar um registro de produtor")
+	public void updateProdutorTest() throws Exception {
+		//cenário (given)
+		Long idProdutor = 1L;
+		
+		ProdutorDto dto;
+		dto = createNewProdutorDto();
+		
+		ProdutorDto response  = createNewProdutorDto();
+		response.setId(idProdutor);
+		
+		Produtor responseProdutor  = createNewProdutor();
+		response.setId(idProdutor);
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
+		System.out.println("JSON: " + json);
+		
+		BDDMockito.given(service.getById(idProdutor)).willReturn(responseProdutor);
+		
+		BDDMockito.given(service.update(dto)).willReturn(response);
 		
 		//execução (when)
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-				.delete(PRODUTOR_API + "/" + idProdutor )
+				.put(String.format("%s%s%x",PRODUTOR_API,"/",idProdutor))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
+
+		//verificação
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isOk())
+		.andExpect(MockMvcResultMatchers.jsonPath("id").isNotEmpty())
+		.andExpect(MockMvcResultMatchers.jsonPath("nome").value("João Paulo"))
+		.andExpect(MockMvcResultMatchers.jsonPath("cpf").value("04459471604"))
+		.andExpect(MockMvcResultMatchers.jsonPath("fone").value("33999065029"))
+
+		;		
+	}
+	@Test
+	@DisplayName("Deve retornar erro ao atualizar um registro de produtor não registrado")
+	public void updateNotFoundProdutorTest() throws Exception {
+		//cenário (given)
+		Long idProdutor = 1L;
+		
+		ProdutorDto dto;
+		dto = createNewProdutorDto();
+		
+		ProdutorDto response  = createNewProdutorDto();
+		response.setId(idProdutor);
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
+		
+		BDDMockito.given(service.getById(Mockito.anyLong())).willThrow(new ProdutorNotFound());
+		
+		BDDMockito.given(service.update(dto)).willReturn(response);
+		
+		//execução (when)
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.put(String.format("%s%s%x",PRODUTOR_API,"/",idProdutor))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
+		
+		//verificação
+		mvc.perform(request)
+		.andExpect(MockMvcResultMatchers.status().isNotFound())
+		;		
+	}
+	@Test
+	@DisplayName("Deve retornar produtor não registrado ao não encontrar o Produtor para deletar")
+	public void deleteNotFoundProdutorTest() throws Exception {
+		//cenário (given)
+		Long idProdutor = 1L;
+		
+		BDDMockito.given(service.getById(Mockito.anyLong())).willThrow(new ProdutorNotFound());
+		
+		//execução (when)
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.delete(String.format("%s%s%x",PRODUTOR_API,"/",idProdutor))
 				.accept(MediaType.APPLICATION_JSON);
 		
 		mvc.perform(request)
-		.andExpect(MockMvcResultMatchers.status().isNoContent())
+		.andExpect(MockMvcResultMatchers.status().isNotFound())
 		;		
 	}
 

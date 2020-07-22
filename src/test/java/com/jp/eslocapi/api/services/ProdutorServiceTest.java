@@ -12,7 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.repositories.ProdutorRepository;
 import com.jp.eslocapi.exceptions.BusinessException;
 import com.jp.eslocapi.services.ProdutorService;
@@ -33,9 +33,9 @@ public class ProdutorServiceTest {
 	@DisplayName("Deve salvar o registro de produtor")
 	public void saveProdutor() {
 		//cenário
-		Produtor produtor = createValidProdutor();
+		Persona produtor = createValidProdutor();
 		
-		Produtor responseProdutor = Produtor.builder()
+		Persona responseProdutor = Persona.builder()
 				.id(10L)
 				.nome("João Paulo")
 				.cpf("04459471604")
@@ -46,7 +46,7 @@ public class ProdutorServiceTest {
 		Mockito.when(repository.save(produtor)).thenReturn(responseProdutor);
 		
 		//execução
-		Produtor savedProdutor = service.save(produtor);
+		Persona savedProdutor = service.save(produtor);
 		
 		//verificação
 		assertThat(savedProdutor.getId()).isNotNull();
@@ -54,8 +54,8 @@ public class ProdutorServiceTest {
 		assertThat(savedProdutor.getCpf()).isEqualTo("04459471604");
 		assertThat(savedProdutor.getFone()).isEqualTo("33999065029");
 	}
-	private Produtor createValidProdutor() {
-		return Produtor.builder()
+	private Persona createValidProdutor() {
+		return Persona.builder()
 				.nome("João Paulo")
 				.cpf("04459471604")
 				.fone("33999065029")
@@ -65,7 +65,7 @@ public class ProdutorServiceTest {
 	@DisplayName("Deve lançar erro de negocio ao tentar salvar um registro com cpf duplicado")
 	public void shouldNotSaveProdutorWithDuplicatedCpf() {
 		//cenário
-		Produtor produtor = createValidProdutor();
+		Persona produtor = createValidProdutor();
 		
 		String errorMessage = "Este cpf já existe";
 		

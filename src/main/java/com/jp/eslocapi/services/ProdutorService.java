@@ -1,18 +1,20 @@
 package com.jp.eslocapi.services;
 
-import javax.validation.Valid;
-
 import com.jp.eslocapi.api.dto.ProdutorDto;
-import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.api.entities.Persona;
 
 public interface ProdutorService {
 
-	Produtor save(Produtor produtor);
+	Persona save(Persona produtor);
 
-	Produtor getById(Long id);
+	Persona getById(Long id);
 
-	void delete(Produtor toDeleted);
+	void delete(Persona toDeleted);
 
-	ProdutorDto update(@Valid ProdutorDto dto);
+	ProdutorDto update(ProdutorDto dto);
+
+	Persona toProdutor(ProdutorDto dto);
+
+	ProdutorDto toProdutorDto(Persona toSaved);
 
 }

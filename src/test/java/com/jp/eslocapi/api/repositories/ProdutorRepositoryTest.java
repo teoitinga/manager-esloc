@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.api.entities.Persona;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -29,7 +29,7 @@ public class ProdutorRepositoryTest {
 		//cenário
 		String cpf = "04459471604";
 		
-		Produtor produtor = this.createValidProdutor();
+		Persona produtor = this.createValidProdutor();
 		entityManager.persist(produtor);
 		
 		//execução
@@ -45,7 +45,7 @@ public class ProdutorRepositoryTest {
 		//cenário
 		String cpf = "04459471600";
 		
-		Produtor produtor = this.createValidProdutor();
+		Persona produtor = this.createValidProdutor();
 		entityManager.persist(produtor);
 		
 		//execução
@@ -55,8 +55,8 @@ public class ProdutorRepositoryTest {
 		assertThat(exists).isFalse();
 		
 	}
-	private Produtor createValidProdutor() {
-		return Produtor.builder()
+	private Persona createValidProdutor() {
+		return Persona.builder()
 				.nome("João Paulo")
 				.cpf("04459471604")
 				.fone("33999065029")

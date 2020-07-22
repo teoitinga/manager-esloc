@@ -1,5 +1,6 @@
 package com.jp.eslocapi.api.resources;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jp.eslocapi.api.dto.ProdutorDto;
-import com.jp.eslocapi.api.entities.Produtor;
+import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.exceptions.ApiErrors;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.exceptions.BusinessException;
 import com.jp.eslocapi.services.ProdutorService;
 
 @RestController
-@RequestMapping("/api/v1/produtores")
+@RequestMapping("api/v1/produtores")
 public class ProdutorController {
 	
 	private ProdutorService service;
@@ -35,43 +36,31 @@ public class ProdutorController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public ProdutorDto create(@Valid @RequestBody ProdutorDto dto) {
+	public ProdutorDto create( @RequestBody @Valid ProdutorDto dto) {
 		
-		Produtor toSaved = Produtor.builder()
-				.nome(dto.getNome())
-				.cpf(dto.getCpf())
-				.fone(dto.getFone())
-				.build();
+		Persona toSaved = service.toProdutor(dto);
 		toSaved = service.save(toSaved);
 		
-		ProdutorDto response = ProdutorDto.builder()
-				.id(toSaved.getId())
-				.nome(toSaved.getNome())
-				.cpf(toSaved.getCpf())
-				.fone(toSaved.getFone())
-				.build();
+		ProdutorDto response = service.toProdutorDto(toSaved);
+		
 		return response;
 	}
 	@GetMapping("{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public ProdutorDto getProdutor(@PathVariable Long id) {
 		
-		Produtor toSaved = service.getById(id);
+		Persona toSaved = service.getById(id);
 		
-		ProdutorDto response = ProdutorDto.builder()
-				.id(toSaved.getId())
-				.nome(toSaved.getNome())
-				.cpf(toSaved.getCpf())
-				.fone(toSaved.getFone())
-				.build();
+		ProdutorDto response = service.toProdutorDto(toSaved);
 		
 		return response;
 	}
+	
 	@DeleteMapping("{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteProdutor(@PathVariable Long id) {
 		
-		Produtor toDeleted= service.getById(id);
+		Persona toDeleted= service.getById(id);
 		service.delete(toDeleted);
 
 	}
@@ -81,7 +70,7 @@ public class ProdutorController {
 		
 		ProdutorDto response;
 		
-		Produtor toUpdated = service.getById(id);
+		Persona toUpdated = service.getById(id);
 		
 		dto.setId(toUpdated.getId());
 		
@@ -90,6 +79,7 @@ public class ProdutorController {
 		return response;	
 		
 	}
+	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ApiErrors handleValidationsException(MethodArgumentNotValidException ex) {
@@ -99,16 +89,22 @@ public class ProdutorController {
 		return new ApiErrors(resultErrors);
 	}
 	@ExceptionHandler(BusinessException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ApiErrors handleBusinessException(BusinessException ex) {
 		
 		return new ApiErrors(ex);
 	}
 	@ExceptionHandler(ProdutorNotFound.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ApiErrors handleBusinessException(ProdutorNotFound ex) {
+	public ApiErrors handleProdutorNotFound(ProdutorNotFound ex) {
 		
 		return new ApiErrors(ex);
+	}
+	@ExceptionHandler(ConstraintViolationException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ApiErrors handleProdutorNotFound(ConstraintViolationException ex) {
+		
+		return new ApiErrors("CPF informado não é válido!");
 	}
 
 }

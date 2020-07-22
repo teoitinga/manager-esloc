@@ -1,5 +1,6 @@
 package com.jp.eslocapi.api.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -10,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+
+import org.hibernate.validator.constraints.br.CPF;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table
-public class Produtor {
+public class Persona {
 
 	@Id
 	@Column
@@ -33,10 +36,14 @@ public class Produtor {
 	private String nome;
 	
 	@Column
+	@CPF
 	private String cpf;
 	
 	@Column
 	private String fone;
+	
+	@Column
+	private LocalDate dataNascimento;
 	
 	@Column
 	private LocalDateTime dataCadastro;

@@ -1,4 +1,4 @@
-package com.jp.eslocapi.api.dto;
+package com.jp.eslocapi.api.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +28,6 @@ public class TipoServico {
 	
 	private String DescricaoTipo;
 	
-	private String tempoEstimado;
+	private int tempoEstimado;
 	
 }

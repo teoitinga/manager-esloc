@@ -3,21 +3,18 @@ package com.jp.eslocapi.api.entities;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -32,31 +29,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table
-public class Tarefa {
-
+public class DetalheServico {
+	
 	@Id
 	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@NotNull(message = "Você deve informar o produtor que solicitou o serviço.")
-	private Persona produtor;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_service")
+	private TipoServico tiposervico;
 	
-	@Column
+	private BigDecimal valorDoServico;
+	
 	private Boolean emitiuDAE;
 	
-	@Column
-	private String observacoes;
+	private LocalDate datapgtoDAE;
+
+	private Boolean emitiuART;
+
+	private LocalDate datapgtoART;	
 	
-	@Column
+	private String tarefaDescricao;
+	
 	private LocalDateTime dataCadastro;
 	
-	@Column
 	private LocalDateTime dataAtualizacao;
+	
+	private LocalDateTime dataFinalizada;
 
-	@OneToMany
-	private List<DetalheServico> detalhes;
+	private EnumStatus statusTarefa;	
+
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private String dataConclusaoPrevista;
 	
 	@PrePersist
 	public void setDataCadastro() {

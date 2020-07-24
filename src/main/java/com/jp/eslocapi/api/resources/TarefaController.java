@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jp.eslocapi.api.dto.TarefaGetDto;
 import com.jp.eslocapi.api.dto.TarefaPostDto;
 import com.jp.eslocapi.api.entities.Tarefa;
 import com.jp.eslocapi.services.TarefaService;
@@ -22,10 +23,10 @@ public class TarefaController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Tarefa create( @RequestBody @Valid TarefaPostDto dto) {
+	public TarefaGetDto create( @RequestBody @Valid TarefaPostDto dto) {
+		//TarefaGetDto
+		Tarefa tarefa = this.service.managerDto(dto);
+		return this.service.toTarefaGetDto(tarefa);
 		
-		Tarefa tarefa = this.service.toTarefa(dto);
-		
-		return this.service.save(tarefa);
 	}
 }

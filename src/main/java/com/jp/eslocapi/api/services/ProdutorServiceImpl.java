@@ -80,5 +80,10 @@ public class ProdutorServiceImpl implements ProdutorService {
 				.build();
 	}
 
+	@Override
+	public Persona getByCpf(String cpf) {
+		return this.repository.findByCpf(cpf).orElseThrow(()-> new ProdutorNotFound());
+	}
+
 
 }

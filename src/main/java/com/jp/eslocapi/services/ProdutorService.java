@@ -17,4 +17,6 @@ public interface ProdutorService {
 
 	ProdutorDto toProdutorDto(Persona toSaved);
 
+	Persona getByCpf(String cpf);
+
 }

@@ -13,7 +13,7 @@
 	<artifactId>esloc-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>esloc-api</name>
-	<description>API de sistemas para esloc</description>
+	<description>API de Gestão de atendimentos no esloc</description>
 
 	<properties>
 		<java.version>1.8</java.version>

@@ -22,6 +22,8 @@ public class DetailServiceDto {
 	private String tarefaDescricao;
 	
 	private String tipoServico;
+
+	private String situacao;
 	
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private String dataConclusaoPrevista;

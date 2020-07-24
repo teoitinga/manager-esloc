@@ -20,6 +20,8 @@ public class DetailsServiceResportDto {
 	private String emitiuART;
 	
 	private String tarefaDescricao;
+
+	private String situacao;
 	
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private String dataConclusaoPrevista;

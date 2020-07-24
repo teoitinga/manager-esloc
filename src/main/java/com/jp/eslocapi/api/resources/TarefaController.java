@@ -24,8 +24,9 @@ public class TarefaController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public TarefaGetDto create( @RequestBody @Valid TarefaPostDto dto) {
-		//TarefaGetDto
+		
 		Tarefa tarefa = this.service.managerDto(dto);
+		
 		return this.service.toTarefaGetDto(tarefa);
 		
 	}

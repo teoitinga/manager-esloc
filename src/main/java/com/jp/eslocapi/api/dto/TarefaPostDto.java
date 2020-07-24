@@ -21,5 +21,6 @@ public class TarefaPostDto {
 	
 	private String observacoes;
 	
+	@NotEmpty(message = "Você deve informar pelo menos um serviço.")
 	private List<DetailServiceDto> tipoServico;
 }

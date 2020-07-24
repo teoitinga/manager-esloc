@@ -2,6 +2,7 @@ package com.jp.eslocapi.api.services.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import com.jp.eslocapi.api.dto.DetailsServiceResportDto;
 import com.jp.eslocapi.api.dto.TarefaGetDto;
 import com.jp.eslocapi.api.dto.TarefaPostDto;
 import com.jp.eslocapi.api.entities.DetalheServico;
+import com.jp.eslocapi.api.entities.EnumStatus;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.entities.Tarefa;
 import com.jp.eslocapi.api.entities.TipoServico;
@@ -41,6 +43,9 @@ public class TarefaServiceImpl implements TarefaService{
 
 	@Autowired
 	DetalheService detalheService;
+	
+	@Autowired
+	private DateTimeFormatter dateTimeFormater;
 
 
 	@Override
@@ -56,7 +61,7 @@ public class TarefaServiceImpl implements TarefaService{
 	@Override
 	@Transactional
 	public Tarefa managerDto(TarefaPostDto dto) {
-		return toTarefa(dto);
+		return this.TarefaRepository.save(toTarefa(dto));
 	}
 	
 	@Override
@@ -66,6 +71,7 @@ public class TarefaServiceImpl implements TarefaService{
 
 		//Obtem lista de serviços
 		List<DetalheServico> detalheServico = toListServices(dto.getTipoServico());
+
 		if(detalheServico.isEmpty()) {
 			throw new ServiceIsEmptyException();
 		}
@@ -89,13 +95,14 @@ public class TarefaServiceImpl implements TarefaService{
 		TipoServico typeService = this.typeService.getByType(dto.getTipoServico()).orElseThrow(()-> new ServiceNotFound());
 		Boolean emitiuDae = Boolean.parseBoolean(dto.getEmitiuDAE());
 		Boolean emitiuArt = Boolean.parseBoolean(dto.getEmitiuART());
-		
+
 		return DetalheServico.builder()
 				.emitiuART(emitiuArt)
 				.emitiuDAE(emitiuDae)
 				.tiposervico(typeService)
 				.valorDoServico(valorDoServico)
 				.tarefaDescricao(dto.getTarefaDescricao())
+				.statusTarefa(EnumStatus.INICIADA)
 				.dataConclusaoPrevista(LocalDate.now().plusDays(typeService.getTempoEstimado()).toString())
 				.build();
 	}
@@ -108,7 +115,9 @@ public class TarefaServiceImpl implements TarefaService{
 		return TarefaGetDto.builder()
 				.atendimentos(report)
 				.cpfProdutor(tarefa.getProdutor().getCpf())
+				.nomeDoProdutor(tarefa.getProdutor().getNome())
 				.id(tarefa.getId())
+				.dataSolicitacao(tarefa.getDataCadastro().format(dateTimeFormater))
 				.build();
 	}
 
@@ -123,6 +132,7 @@ public class TarefaServiceImpl implements TarefaService{
 				.emitiuART(detalhe.getEmitiuART().toString())
 				.tarefaDescricao(detalhe.getTiposervico().getDescricaoTipo())
 				.dataConclusaoPrevista(detalhe.getDataConclusaoPrevista())
+				.situacao(detalhe.getStatusTarefa().toString())
 				.build();
 	}
 

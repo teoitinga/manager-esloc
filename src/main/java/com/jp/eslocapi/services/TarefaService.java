@@ -14,4 +14,6 @@ public interface TarefaService {
 	Tarefa managerDto(TarefaPostDto dto);
 
 	TarefaGetDto toTarefaGetDto(Tarefa tarefa);
+
+	void printFile(Tarefa tarefa);
 }

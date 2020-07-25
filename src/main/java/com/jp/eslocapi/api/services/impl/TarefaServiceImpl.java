@@ -1,6 +1,7 @@
 package com.jp.eslocapi.api.services.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.BeanProperty.Bogus;
 import com.jp.eslocapi.api.dto.DetailServiceDto;
 import com.jp.eslocapi.api.dto.DetailsServiceResportDto;
 import com.jp.eslocapi.api.dto.TarefaGetDto;
@@ -27,6 +29,7 @@ import com.jp.eslocapi.services.DetalheService;
 import com.jp.eslocapi.services.ProdutorService;
 import com.jp.eslocapi.services.TarefaService;
 import com.jp.eslocapi.services.TypeServiceService;
+import com.jp.eslocapi.util.FileUtil;
 
 @Service
 public class TarefaServiceImpl implements TarefaService{
@@ -47,7 +50,9 @@ public class TarefaServiceImpl implements TarefaService{
 	@Autowired
 	private DateTimeFormatter dateTimeFormater;
 
-
+	@Autowired
+	private FileUtil file;
+	
 	@Override
 	public Tarefa save(Tarefa tarefa) {
 		return this.TarefaRepository.save(tarefa);
@@ -82,7 +87,37 @@ public class TarefaServiceImpl implements TarefaService{
 				.produtor(produtor)
 				.detalhes(detalheServico)
 				.build();
+
 		return tarefa;
+	}
+
+	public void printFile(Tarefa tarefa) {
+		StringBuilder  path = new StringBuilder();
+		StringBuilder servicos = new StringBuilder();
+		
+		List<DetalheServico> detalhes = tarefa.getDetalhes();
+		tarefa.getDetalhes().forEach(serv->servicos.append(" -").append(serv.getTiposervico().getTipo()));
+		
+		StringBuilder valores = new StringBuilder();
+		
+		for(int i = 0; i<detalhes.size(); i++) {
+			if(detalhes.get(i).getValorDoServico()!=null || detalhes.get(i).getValorDoServico()!= BigDecimal.ZERO){
+				BigDecimal valorDoServico = detalhes.get(i).getValorDoServico().multiply(new BigDecimal(100));
+				
+				valores
+					.append(" -")
+					.append(valorDoServico.setScale(0));
+			}
+		}
+		path
+			.append(tarefa.getDataCadastro().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+			.append(" -")
+			.append(tarefa.getProdutor().getNome().toUpperCase())
+			.append(servicos)
+			.append(valores)
+		;
+
+		file.createFolder(path.toString());
 	}
 
 	private List<DetalheServico> toListServices(List<DetailServiceDto> tipoServico) {
@@ -91,7 +126,14 @@ public class TarefaServiceImpl implements TarefaService{
 	}
 
 	private DetalheServico toService(DetailServiceDto dto) {
-		BigDecimal valorDoServico = new BigDecimal(dto.getValorDoServico());
+		BigDecimal valorDoServico;
+		try {
+			valorDoServico = new BigDecimal(dto.getValorDoServico());
+			
+		}catch(NullPointerException ex) {
+			valorDoServico = BigDecimal.ZERO;
+		}
+		
 		TipoServico typeService = this.typeService.getByType(dto.getTipoServico()).orElseThrow(()-> new ServiceNotFound());
 		Boolean emitiuDae = Boolean.parseBoolean(dto.getEmitiuDAE());
 		Boolean emitiuArt = Boolean.parseBoolean(dto.getEmitiuART());

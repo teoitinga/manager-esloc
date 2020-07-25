@@ -14,6 +14,7 @@ import com.jp.eslocapi.api.dto.TarefaGetDto;
 import com.jp.eslocapi.api.dto.TarefaPostDto;
 import com.jp.eslocapi.api.entities.Tarefa;
 import com.jp.eslocapi.services.TarefaService;
+import com.jp.eslocapi.util.FileUtil;
 
 @RestController
 @RequestMapping("api/v1/tarefas")
@@ -26,7 +27,7 @@ public class TarefaController {
 	public TarefaGetDto create( @RequestBody @Valid TarefaPostDto dto) {
 		
 		Tarefa tarefa = this.service.managerDto(dto);
-		
+		this.service.printFile(tarefa);
 		return this.service.toTarefaGetDto(tarefa);
 		
 	}

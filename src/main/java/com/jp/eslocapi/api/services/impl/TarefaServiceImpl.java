@@ -1,9 +1,9 @@
 package com.jp.eslocapi.api.services.impl;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.BeanProperty.Bogus;
 import com.jp.eslocapi.api.dto.DetailServiceDto;
 import com.jp.eslocapi.api.dto.DetailsServiceResportDto;
 import com.jp.eslocapi.api.dto.TarefaGetDto;
@@ -30,6 +29,7 @@ import com.jp.eslocapi.services.ProdutorService;
 import com.jp.eslocapi.services.TarefaService;
 import com.jp.eslocapi.services.TypeServiceService;
 import com.jp.eslocapi.util.FileUtil;
+import com.jp.eslocapi.util.Gerenciamento;
 
 @Service
 public class TarefaServiceImpl implements TarefaService{
@@ -52,6 +52,9 @@ public class TarefaServiceImpl implements TarefaService{
 
 	@Autowired
 	private FileUtil file;
+
+	@Autowired
+	private Gerenciamento gerenciamento;
 	
 	@Override
 	public Tarefa save(Tarefa tarefa) {
@@ -66,58 +69,69 @@ public class TarefaServiceImpl implements TarefaService{
 	@Override
 	@Transactional
 	public Tarefa managerDto(TarefaPostDto dto) {
-		return this.TarefaRepository.save(toTarefa(dto));
+		List<Tarefa> tarefas = toListTarefa(dto);
+		List<Tarefa> response = new ArrayList<>();
+		
+		tarefas.forEach(tarefa->response.add(this.TarefaRepository.save(tarefa)));
+		//return this.TarefaRepository.save();//toTarefa(dto));
+		return response.get(0);
 	}
 	
+//	@Override
+//	public Tarefa toTarefa(TarefaPostDto dto) {
+//		//busca informações do solicitante
+//		Persona produtor = this.ProdutorService.getByCpf(dto.getCpfProdutor());
+//
+//		//Obtem lista de serviços
+//		List<DetalheServico> detalheServico = toListServices(dto.getTipoServico());
+//
+//		if(detalheServico.isEmpty()) {
+//			throw new ServiceIsEmptyException();
+//		}
+//		//salvando os servicos prestados
+//		detalheServico.forEach(atendimento->this.detalheService.save(atendimento));
+//		
+//		Tarefa tarefa = Tarefa.builder()
+//				.produtor(produtor)
+//				.detalhes(detalheServico)
+//				.build();
+//
+//		return tarefa;
+//	}
+	//Le os solicitantes do dto e retorna a lista de tarefas
 	@Override
-	public Tarefa toTarefa(TarefaPostDto dto) {
-		//busca informações do solicitante
-		Persona produtor = this.ProdutorService.getByCpf(dto.getCpfProdutor());
-
-		//Obtem lista de serviços
-		List<DetalheServico> detalheServico = toListServices(dto.getTipoServico());
-
-		if(detalheServico.isEmpty()) {
-			throw new ServiceIsEmptyException();
-		}
-		//salvando os servicos prestados
-		detalheServico.forEach(atendimento->this.detalheService.save(atendimento));
+	public List<Tarefa> toListTarefa(TarefaPostDto dto) {
+		List<Tarefa> tarefas = new ArrayList<>();
 		
-		Tarefa tarefa = Tarefa.builder()
-				.produtor(produtor)
-				.detalhes(detalheServico)
-				.build();
+		//a mesma tarefa será gerada para cada cliente
+		List<String> clientes = dto.getCpfProdutor();
+		
+		for(int i = 0; i<clientes.size();i++) {
+			//busca informações do solicitante
+			Persona produtor = this.ProdutorService.getByCpf(clientes.get(i));
 
-		return tarefa;
+			//Obtem lista de serviços
+			List<DetalheServico> detalheServico = toListServices(dto.getTipoServico());
+			
+			if(detalheServico.isEmpty()) {
+				throw new ServiceIsEmptyException();
+			}
+			
+			//salvando os servicos prestados
+			detalheServico.forEach(atendimento->this.detalheService.save(atendimento));
+			
+			Tarefa tarefa = Tarefa.builder()
+					.produtor(produtor)
+					.detalhes(detalheServico)
+					.build();
+			tarefas.add(tarefa);
+		}
+		
+		return tarefas;
 	}
 
 	public void printFile(Tarefa tarefa) {
-		StringBuilder  path = new StringBuilder();
-		StringBuilder servicos = new StringBuilder();
-		
-		List<DetalheServico> detalhes = tarefa.getDetalhes();
-		tarefa.getDetalhes().forEach(serv->servicos.append(" -").append(serv.getTiposervico().getTipo()));
-		
-		StringBuilder valores = new StringBuilder();
-		
-		for(int i = 0; i<detalhes.size(); i++) {
-			if(detalhes.get(i).getValorDoServico()!=null || detalhes.get(i).getValorDoServico()!= BigDecimal.ZERO){
-				BigDecimal valorDoServico = detalhes.get(i).getValorDoServico().multiply(new BigDecimal(100));
-				
-				valores
-					.append(" -")
-					.append(valorDoServico.setScale(0));
-			}
-		}
-		path
-			.append(tarefa.getDataCadastro().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
-			.append(" -")
-			.append(tarefa.getProdutor().getNome().toUpperCase())
-			.append(servicos)
-			.append(valores)
-		;
-
-		file.createFolder(path.toString());
+		file.createFolder(this.gerenciamento.obtemNomeDePastaDoProdutor(tarefa));
 	}
 
 	private List<DetalheServico> toListServices(List<DetailServiceDto> tipoServico) {
@@ -176,6 +190,12 @@ public class TarefaServiceImpl implements TarefaService{
 				.dataConclusaoPrevista(detalhe.getDataConclusaoPrevista())
 				.situacao(detalhe.getStatusTarefa().toString())
 				.build();
+	}
+
+	@Override
+	public Tarefa getById(String idTarefa) {
+		Long id = Long.parseLong(idTarefa);
+		return this.getById(id);
 	}
 
 }

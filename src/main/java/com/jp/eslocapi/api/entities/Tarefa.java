@@ -43,6 +43,12 @@ public class Tarefa {
 	@NotNull(message = "Você deve informar o produtor que solicitou o serviço.")
 	private Persona produtor;
 	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Persona responsavel;
+
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Persona emissor;
+	
 	@Column
 	private Boolean emitiuDAE;
 	

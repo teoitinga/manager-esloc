@@ -19,4 +19,6 @@ public interface ProdutorService {
 
 	Persona getByCpf(String cpf);
 
+	Persona whatIsCpf(String cpf);
+
 }

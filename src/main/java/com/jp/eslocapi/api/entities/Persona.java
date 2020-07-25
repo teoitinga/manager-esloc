@@ -51,6 +51,15 @@ public class Persona {
 	@Column
 	private LocalDateTime dataAtualizacao;
 	
+	@Column
+	private EnumType tipo;
+	
+	@Column
+	private EnumPermissao permissao;
+	
+	@Column
+	private String password;
+	
 	@PrePersist
 	public void setDataCadastro() {
 		this.dataCadastro = LocalDateTime.now();

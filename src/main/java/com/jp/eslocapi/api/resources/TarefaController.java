@@ -14,7 +14,6 @@ import com.jp.eslocapi.api.dto.TarefaGetDto;
 import com.jp.eslocapi.api.dto.TarefaPostDto;
 import com.jp.eslocapi.api.entities.Tarefa;
 import com.jp.eslocapi.services.TarefaService;
-import com.jp.eslocapi.util.FileUtil;
 
 @RestController
 @RequestMapping("api/v1/tarefas")

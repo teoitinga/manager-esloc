@@ -17,10 +17,10 @@ public class FileUtil {
 	private String raiz;
 	
 	public void salvar(MultipartFile arquivo, String diretorio, String nome) {
-		String extensaoOriginal = arquivo.getOriginalFilename();
-		extensaoOriginal = extensaoOriginal.split("[.]")[1];
+		String extensaoOriginal = arquivo.getOriginalFilename().split("[.]")[1];
 		
 		Path diretorioPath = Paths.get(this.raiz, diretorio);
+		
 		Path arquivoPath = diretorioPath.resolve(nome + "." + extensaoOriginal);
 		
 		log.info("Arquivo enviado: {}", arquivoPath.getFileName());

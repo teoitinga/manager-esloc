@@ -6,7 +6,7 @@ import com.jp.eslocapi.api.entities.TipoServico;
 
 public interface TypeServiceService {
 
-	TipoServico save(TipoServico servicos);
+	TipoServico save(TipoServico tipoServico);
 
 	Optional<TipoServico> getByType(String tipoServico);
 

@@ -2,10 +2,14 @@ package com.jp.eslocapi.api.services.impl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.jp.eslocapi.api.dto.ProdutorDto;
+import com.jp.eslocapi.api.entities.EnumPermissao;
+import com.jp.eslocapi.api.entities.EnumType;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.api.repositories.ProdutorRepository;
@@ -15,6 +19,9 @@ import com.jp.eslocapi.services.ProdutorService;
 @Service
 public class ProdutorServiceImpl implements ProdutorService {
 
+	@Value("${esloc.date.view}")
+	private String DATA_FORMAT_VIEW;
+	
 	private ProdutorRepository repository;
 
 	public ProdutorServiceImpl(ProdutorRepository repository) {
@@ -23,9 +30,11 @@ public class ProdutorServiceImpl implements ProdutorService {
 
 	@Override
 	public Persona save(Persona produtor) {
+		
 		if(this.repository.existsByCpf(produtor.getCpf())) {
-			throw new BusinessException("Este cpf já existe");
+			throw new BusinessException("Já existe um registro com este cpf.");
 		}
+		
 		return repository.save(produtor);
 	}
 
@@ -59,7 +68,7 @@ public class ProdutorServiceImpl implements ProdutorService {
 				.nome(produtorDto.getNome())
 				.cpf(produtorDto.getCpf())
 				.fone(produtorDto.getFone())
-				.dataNascimento(LocalDate.parse(produtorDto.getDataNascimento(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+				.dataNascimento(LocalDate.parse(produtorDto.getDataNascimento(), DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW)))
 				.build();
 	}
 	
@@ -70,19 +79,33 @@ public class ProdutorServiceImpl implements ProdutorService {
 	 * @see ProdutorDto
 	 */
 	@Override
-	public ProdutorDto toProdutorDto(Persona toSaved) {
+	public ProdutorDto toProdutorDto(Persona persona) {
+		if(persona == null) {
+			return null;
+		}
 		return ProdutorDto.builder()
-				.id(toSaved.getId())
-				.nome(toSaved.getNome())
-				.cpf(toSaved.getCpf())
-				.fone(toSaved.getFone())
-				.dataNascimento(String.valueOf(toSaved.getDataNascimento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))))
+				.id(persona.getId())
+				.nome(persona.getNome())
+				.cpf(persona.getCpf())
+				.fone(persona.getFone())
+				.dataNascimento(String.valueOf(persona.getDataNascimento().format(DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW))))
 				.build();
 	}
 
 	@Override
 	public Persona getByCpf(String cpf) {
 		return this.repository.findByCpf(cpf).orElseThrow(()-> new ProdutorNotFound());
+	}
+
+	@Override
+	public Persona whatIsCpf(String cpf) {
+		Optional<Persona> produtor = this.repository.findByCpf(cpf);
+		if(produtor.isPresent()) {
+			return produtor.get();
+		} else {
+			return null;
+		}
+
 	}
 
 

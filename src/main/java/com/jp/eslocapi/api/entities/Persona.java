@@ -59,14 +59,43 @@ public class Persona {
 	
 	@Column
 	private String password;
+
+	@Column
+	private Integer coclusaoCadastro;
 	
 	@PrePersist
 	public void setDataCadastro() {
 		this.dataCadastro = LocalDateTime.now();
+		configConclusaoCadastro();
 	}
 	
 	@PreUpdate
 	public void setDataUptade() {
 		this.dataAtualizacao = LocalDateTime.now();
+		configConclusaoCadastro();
+	}
+	private void configConclusaoCadastro() {
+		int camposTotal = 0;
+
+		int camposPreenchidos = 0;
+		
+		if(this.nome != null) {
+			camposPreenchidos++;
+		}
+		camposTotal++;
+		if(this.cpf != null) {
+			camposPreenchidos++;
+		}
+		camposTotal++;
+		if(this.fone != null) {
+			camposPreenchidos++;
+		}
+		camposTotal++;
+		if(this.dataNascimento != null) {
+			camposPreenchidos++;
+		}
+		camposTotal++;
+		
+		this.coclusaoCadastro = camposTotal/camposPreenchidos;
 	}
 }

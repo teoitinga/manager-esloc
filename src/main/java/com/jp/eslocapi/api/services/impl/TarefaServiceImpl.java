@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jp.eslocapi.api.dto.DetailServiceDto;
 import com.jp.eslocapi.api.dto.DetailsServiceResportDto;
+import com.jp.eslocapi.api.dto.ProdutoPostMinDto;
 import com.jp.eslocapi.api.dto.TarefaGetDto;
 import com.jp.eslocapi.api.dto.TarefaPostDto;
 import com.jp.eslocapi.api.entities.DetalheServico;
@@ -38,7 +39,7 @@ public class TarefaServiceImpl implements TarefaService{
 	TarefaRepository TarefaRepository;
 	
 	@Autowired
-	ProdutorService ProdutorService;
+	ProdutorService produtorService;
 
 	@Autowired
 	TypeServiceService typeService;
@@ -55,6 +56,7 @@ public class TarefaServiceImpl implements TarefaService{
 
 	@Autowired
 	private Gerenciamento gerenciamento;
+
 	
 	@Override
 	public Tarefa save(Tarefa tarefa) {
@@ -104,11 +106,21 @@ public class TarefaServiceImpl implements TarefaService{
 		List<Tarefa> tarefas = new ArrayList<>();
 		
 		//a mesma tarefa será gerada para cada cliente
-		List<String> clientes = dto.getCpfProdutor();
+		List<ProdutoPostMinDto> clientes = dto.getProdutorInfo();
 		
 		for(int i = 0; i<clientes.size();i++) {
+			/**
+			 * Registra Produtor no banco de dados, caso o cpf esteja definido e o nome esteja NULO.
+			 * Isso garante a busca pelo CPF
+			 */
+			if(clientes.get(i).getNome()==null && clientes.get(i).getCpf()!=null) {
+				Persona toSaved = produtorService.toProdutor(clientes.get(i));
+				toSaved = produtorService.save(toSaved);
+
+			}
+			
 			//busca informações do solicitante
-			Persona produtor = this.ProdutorService.getByCpf(clientes.get(i));
+			Persona produtor = this.produtorService.getByCpf(clientes.get(i).getCpf());
 
 			//Obtem lista de serviços
 			List<DetalheServico> detalheServico = toListServices(dto.getTipoServico());

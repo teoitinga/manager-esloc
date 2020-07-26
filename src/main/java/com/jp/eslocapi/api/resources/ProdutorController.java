@@ -26,8 +26,14 @@ import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.exceptions.BusinessException;
 import com.jp.eslocapi.services.ProdutorService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("api/v1/produtores")
+@Api("Produtores")
 public class ProdutorController {
 	
 	private ProdutorService service;
@@ -38,6 +44,11 @@ public class ProdutorController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
+	@ApiOperation("Registra um novo produtor")
+	@ApiResponses({
+		@ApiResponse(code=201, message = ""),
+		@ApiResponse(code=500, message = "")
+	})
 	public ProdutorDto create( @RequestBody @Valid ProdutorDto dto) {
 		
 		Persona toSaved = service.toProdutor(dto);
@@ -49,6 +60,11 @@ public class ProdutorController {
 	}
 	@GetMapping("{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@ApiOperation("Registra um novo produtor")
+	@ApiResponses({
+		@ApiResponse(code=200, message = ""),
+		@ApiResponse(code=404, message = "Produtor não registrado no banco de dados.")
+	})
 	public ProdutorDto getProdutor(@PathVariable Long id) {
 		
 		Persona toSaved = service.getById(id);
@@ -62,6 +78,10 @@ public class ProdutorController {
 	}
 	@GetMapping("cpf/{cpf}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
+	@ApiOperation("Verifica se o produtor já existe e retorno os dados")
+	@ApiResponses({
+		@ApiResponse(code=202, message = "")
+	})
 	public ProdutorDto getFindByCpf(@PathVariable String cpf) {
 		
 		Persona toSaved = service.whatIsCpf(cpf);
@@ -73,6 +93,10 @@ public class ProdutorController {
 	
 	@DeleteMapping("{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@ApiOperation("Apaga registro de produtor pelo ID informado")
+	@ApiResponses({
+		@ApiResponse(code=204, message = "")
+	})
 	public void deleteProdutor(@PathVariable Long id) {
 		
 		Persona toDeleted= service.getById(id);
@@ -81,6 +105,11 @@ public class ProdutorController {
 	}
 	@PutMapping("{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@ApiOperation("Atualiza registro de produtor pelo ID informado")
+	@ApiResponses({
+		@ApiResponse(code=200, message = ""),
+		@ApiResponse(code=404, message = "")
+	})
 	public ProdutorDto updadeProdutor(@PathVariable Long id, @RequestBody @Valid ProdutorDto dto) {
 		
 		ProdutorDto response;

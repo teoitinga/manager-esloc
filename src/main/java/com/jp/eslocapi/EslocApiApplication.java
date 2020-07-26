@@ -1,5 +1,6 @@
 package com.jp.eslocapi;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,13 +52,40 @@ public class EslocApiApplication extends SpringBootServletInitializer {
 
 			TipoServico srv;
 
-			srv = TipoServico.builder().tempoEstimado(7).DescricaoTipo("Elaboração de projeto de crédito rural")
-					.tipo("CR").build();
+			srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("Elaboração de projeto de crédito rural")
+					.tipo("CR")
+					.valorReferencia(new BigDecimal("150"))
+					.build();
 			services.add(srv);
 			
-			srv = TipoServico.builder().tempoEstimado(2).DescricaoTipo("Emissão de Declaração de aptidão ao pronaf")
-					.tipo("DAP").build();
-			
+			srv = TipoServico.builder().tempoEstimado(2).descricaoTipo("Emissão de Declaração de aptidão ao pronaf")
+					.tipo("DAP")
+					.valorReferencia(new BigDecimal("0"))			
+					.build();
+			services.add(srv);
+
+			srv = TipoServico.builder().tempoEstimado(2).descricaoTipo("Elaboração de limite de crédito para Banco do Brasil")
+					.tipo("LM")
+					.valorReferencia(new BigDecimal("150"))			
+					.build();
+			services.add(srv);
+
+			srv = TipoServico.builder().tempoEstimado(2).descricaoTipo("Elaboração de limite de crédito para Sicoob")
+					.tipo("CAD")
+					.valorReferencia(new BigDecimal("150"))			
+					.build();
+			services.add(srv);
+
+			srv = TipoServico.builder().tempoEstimado(2).descricaoTipo("Cadastro ambiental Rural - Emissão")
+					.tipo("CAR")
+					.valorReferencia(new BigDecimal("200"))			
+					.build();
+			services.add(srv);
+
+			srv = TipoServico.builder().tempoEstimado(2).descricaoTipo("Gleba - elaboração de Geo referenciamento")
+					.tipo("GLB")
+					.valorReferencia(new BigDecimal("50"))			
+					.build();
 			services.add(srv);
 			
 			services.forEach(servicos-> service.save(servicos));

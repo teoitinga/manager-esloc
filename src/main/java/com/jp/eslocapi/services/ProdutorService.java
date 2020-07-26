@@ -1,5 +1,6 @@
 package com.jp.eslocapi.services;
 
+import com.jp.eslocapi.api.dto.ProdutoPostMinDto;
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Persona;
 
@@ -20,5 +21,7 @@ public interface ProdutorService {
 	Persona getByCpf(String cpf);
 
 	Persona whatIsCpf(String cpf);
+
+	Persona toProdutor(ProdutoPostMinDto produtoPostMinDto);
 
 }

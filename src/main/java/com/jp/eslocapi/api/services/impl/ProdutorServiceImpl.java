@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.jp.eslocapi.api.dto.ProdutoPostMinDto;
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.EnumPermissao;
 import com.jp.eslocapi.api.entities.EnumType;
@@ -106,6 +107,14 @@ public class ProdutorServiceImpl implements ProdutorService {
 			return null;
 		}
 
+	}
+
+	@Override
+	public Persona toProdutor(ProdutoPostMinDto produtor) {
+		return Persona.builder()
+				.nome(produtor.getNome())
+				.cpf(produtor.getCpf())
+				.build();
 	}
 
 

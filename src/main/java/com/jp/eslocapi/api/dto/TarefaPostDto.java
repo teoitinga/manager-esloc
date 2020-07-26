@@ -17,7 +17,7 @@ public class TarefaPostDto {
 	private Long id;
 	
 	@NotEmpty(message = "Você deve informar o cpf do solicitante.")
-	private List<String> cpfProdutor;
+	private List<ProdutoPostMinDto> produtorInfo;
 	
 	private String observacoes;
 	

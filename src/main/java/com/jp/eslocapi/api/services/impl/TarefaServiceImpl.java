@@ -21,6 +21,7 @@ import com.jp.eslocapi.api.entities.EnumStatus;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.entities.Tarefa;
 import com.jp.eslocapi.api.entities.TipoServico;
+import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.api.exceptions.ServiceIsEmptyException;
 import com.jp.eslocapi.api.exceptions.ServiceNotFound;
 import com.jp.eslocapi.api.exceptions.TarefaNotFoundException;
@@ -113,14 +114,22 @@ public class TarefaServiceImpl implements TarefaService{
 			 * Registra Produtor no banco de dados, caso o cpf esteja definido e o nome esteja NULO.
 			 * Isso garante a busca pelo CPF
 			 */
-			if(clientes.get(i).getNome()==null && clientes.get(i).getCpf()!=null) {
-				Persona toSaved = produtorService.toProdutor(clientes.get(i));
+//			if(clientes.get(i).getNome()==null && clientes.get(i).getCpf()!=null) {
+//				Persona toSaved = produtorService.toProdutor(clientes.get(i));
+//				toSaved = produtorService.save(toSaved);
+//
+//			}
+			Persona toSaved = null;
+			try {
+				toSaved = this.produtorService.getByCpf(clientes.get(i).getCpf());
+				
+			}catch(ProdutorNotFound ex) {
+				toSaved = produtorService.toProdutor(clientes.get(i));
 				toSaved = produtorService.save(toSaved);
-
+				
 			}
-			
 			//busca informações do solicitante
-			Persona produtor = this.produtorService.getByCpf(clientes.get(i).getCpf());
+			Persona produtor = toSaved;//this.produtorService.getByCpf(clientes.get(i).getCpf());
 
 			//Obtem lista de serviços
 			List<DetalheServico> detalheServico = toListServices(dto.getTipoServico());

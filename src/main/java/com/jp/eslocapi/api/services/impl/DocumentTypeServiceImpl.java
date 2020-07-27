@@ -31,5 +31,9 @@ public class DocumentTypeServiceImpl implements DocumentTypeService{
 	public DocumentType findByTipo(String documentoTipo) {
 		return this.repository.findByAbreviatura(documentoTipo).orElseThrow(()-> new DocumentNotFoundException());
 	}
+	@Override
+	public boolean isContaining() {
+		return this.repository.findAll().size() >= 0 ? true : false;
+	}
 
 }

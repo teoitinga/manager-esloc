@@ -9,9 +9,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.jp.eslocapi.api.entities.DetalheServico;
+import com.jp.eslocapi.api.dto.Tarefa;
+import com.jp.eslocapi.api.dto.TarefaPostDto;
+import com.jp.eslocapi.api.entities.Atendimento;
 import com.jp.eslocapi.api.entities.DocumentType;
-import com.jp.eslocapi.api.entities.Tarefa;
+import com.jp.eslocapi.api.entities.Persona;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +23,9 @@ public class Gerenciamento {
 	
 	@Value("${esloc.date.folder}")
 	private String DATA_FORMAT_FOLDER;// = "yyyy-MM-dd";
+
+	@Value("${servicos.atendimentos.raiz}")
+	private String PATH_ROOT;// = "yyyy-MM-dd";
 	
 	public String obtemNomeDeArquivo(Tarefa tarefa, DocumentType document) {
 		StringBuilder arquivo = new StringBuilder();
@@ -28,7 +33,7 @@ public class Gerenciamento {
 		.append(" ")
 		.append(document.getAbreviatura())
 		.append(" ")
-		.append(tarefa.getProdutor()
+		.append(tarefa.getProdutores().get(0)
 				.getNome().toUpperCase())
 		;
 		
@@ -40,8 +45,8 @@ public class Gerenciamento {
 		StringBuilder  path = new StringBuilder();
 		StringBuilder servicos = new StringBuilder();
 		
-		List<DetalheServico> detalhes = tarefa.getDetalhes();
-		tarefa.getDetalhes().forEach(serv->servicos.append(" -").append(serv.getTiposervico().getTipo()));
+		List<Atendimento> detalhes = tarefa.getAtendimentos();
+		tarefa.getAtendimentos().forEach(serv->servicos.append(" -").append(serv.getTiposervico().getTipo()));
 		
 		StringBuilder valores = new StringBuilder();
 		
@@ -55,14 +60,45 @@ public class Gerenciamento {
 			}
 		}
 		path
-			.append(tarefa.getDataCadastro().format(DateTimeFormatter.ofPattern(DATA_FORMAT_FOLDER)))
+			.append(tarefa.getAtendimentos().get(0).getDataCadastro().format(DateTimeFormatter.ofPattern(DATA_FORMAT_FOLDER)))
 			.append(" -")
-			.append(tarefa.getProdutor().getNome().toUpperCase())
+			.append(tarefa.getAtendimentos().get(0).getProdutor().getNome().toUpperCase())
 			.append(servicos)
 			.append(valores)
 		;
 		log.info("Path do arquivo: {}", path.toString());
 		return path.toString();
+	}
+
+	public void createFolderToAtendimento(List<Atendimento> servicosPrestados, Persona produtorSolicitante) {
+		//Constroi a tarefa e registra no banco de dados
+		Tarefa tarefa = Tarefa.builder()
+				.atendimentos(servicosPrestados)
+				.build();
+
+		String nomeDaPasta = buildFolderName(tarefa);	
+		log.info("Nome da pasta {}", nomeDaPasta);
+	}
+
+	private String buildFolderName(Tarefa tarefa) {
+		StringBuilder  path = new StringBuilder();
+		
+		path.append(PATH_ROOT);
+		
+		//obtem o os servico prestados
+		List<Atendimento> atd = tarefa.getAtendimentos();
+
+		//obtem a data
+//		String dataAtendimento = atd.get(0).getDataCadastro().format(DateTimeFormatter.ofPattern(DATA_FORMAT_FOLDER));
+
+//		//obtem o primeiro produtor
+//		Persona produtor = tarefa.getProdutores().get(0);
+//		path.append(" -");
+//		path.append(produtor.getNome().toUpperCase());
+		
+		return path.toString();
+		
+		
 	}
 
 }

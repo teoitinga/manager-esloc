@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -33,10 +34,12 @@ public class Persona {
 	private Long id;
 	
 	@Column
+	@NotNull(message = "Não é possível fazer um registro informar o nome")
 	private String nome;
 	
 	@Column
 	@CPF
+	@NotNull(message = "Não é possível fazer um registro sem o cpf")
 	private String cpf;
 	
 	@Column
@@ -96,6 +99,6 @@ public class Persona {
 		}
 		camposTotal++;
 		
-		this.coclusaoCadastro = camposTotal/camposPreenchidos;
+		this.coclusaoCadastro = camposTotal-camposPreenchidos;
 	}
 }

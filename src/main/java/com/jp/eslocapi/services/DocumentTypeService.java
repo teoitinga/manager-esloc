@@ -11,5 +11,7 @@ public interface DocumentTypeService {
 	List<DocumentType> findAll();
 
 	DocumentType findByTipo(String documentoTipo);
+	
+	boolean isContaining();
 
 }

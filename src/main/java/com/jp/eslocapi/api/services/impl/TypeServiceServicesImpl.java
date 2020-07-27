@@ -51,5 +51,8 @@ public class TypeServiceServicesImpl implements TypeServiceService{
 				.tempoNecessario(String.valueOf(servico.getTempoEstimado()))
 				.build();
 	}
+	public boolean isContaining() {
+		return this.repository.findAll().size() > 0 ? true : false;
+	}
 
 }

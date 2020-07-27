@@ -23,5 +23,6 @@ public interface ProdutorService {
 	Persona whatIsCpf(String cpf);
 
 	Persona toProdutor(ProdutoPostMinDto produtoPostMinDto);
-
+	
+	Persona saveMin(ProdutoPostMinDto produtorMin);
 }

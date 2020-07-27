@@ -3,7 +3,6 @@ package com.jp.eslocapi.api.entities;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,11 +11,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -31,9 +30,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table
-public class Tarefa {
-
+@EqualsAndHashCode
+public class Atendimento {
 	@Id
 	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,10 +48,10 @@ public class Tarefa {
 	private Persona emissor;
 	
 	@Column
-	private Boolean emitiuDAE;
-	
-	@Column
 	private String observacoes;
+
+	@Column
+	private String tarefaDescricao;
 	
 	@Column
 	private LocalDateTime dataCadastro;
@@ -61,8 +59,33 @@ public class Tarefa {
 	@Column
 	private LocalDateTime dataAtualizacao;
 
-	@OneToMany
-	private List<DetalheServico> detalhes;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_service")
+	private TipoServico tiposervico;
+
+	@Column
+	private BigDecimal valorDoServico;
+	
+	@Column
+	private Boolean emitiuDAE;
+	
+	@Column
+	private LocalDate datapgtoDAE;
+
+	@Column
+	private Boolean emitiuART;
+
+	@Column
+	private LocalDate datapgtoART;	
+	
+	@Column
+	private LocalDateTime dataFinalizada;
+	
+	@Column
+	private EnumStatus statusTarefa;
+	
+	@Column
+	private LocalDate dataConclusaoPrevista;
 	
 	@PrePersist
 	public void setDataCadastro() {

@@ -13,5 +13,6 @@ public interface TypeServiceService {
 	Optional<TipoServico> getByType(String tipoServico);
 
 	List<ServicoDto> findAll();
-
+	
+	boolean isContaining();
 }

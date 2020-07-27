@@ -137,6 +137,15 @@ public class ProdutorServiceImpl implements ProdutorService {
 				.cpf(produtor.getCpf())
 				.build();
 	}
+	
+	@Override
+	public Persona saveMin(ProdutoPostMinDto produtorMin) {
+		Persona produtor = Persona.builder()
+				.nome(produtorMin.getNome())
+				.cpf(produtorMin.getCpf())
+				.build();
+		return this.repository.save(produtor);
+	}
 
 
 }

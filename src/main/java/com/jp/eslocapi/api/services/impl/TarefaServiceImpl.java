@@ -163,7 +163,7 @@ public class TarefaServiceImpl implements TarefaService{
 		TipoServico typeService = this.typeService.getByType(dto.getTipoServico()).orElseThrow(()-> new ServiceNotFound());
 		Boolean emitiuDae = Boolean.parseBoolean(dto.getEmitiuDAE());
 		Boolean emitiuArt = Boolean.parseBoolean(dto.getEmitiuART());
-
+		
 		return DetalheServico.builder()
 				.emitiuART(emitiuArt)
 				.emitiuDAE(emitiuDae)

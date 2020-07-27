@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.jp.eslocapi.api.dto.ProdutoPostMinDto;
 import com.jp.eslocapi.api.dto.ProdutorDto;
-import com.jp.eslocapi.api.entities.EnumPermissao;
-import com.jp.eslocapi.api.entities.EnumType;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.api.repositories.ProdutorRepository;
@@ -22,6 +20,8 @@ public class ProdutorServiceImpl implements ProdutorService {
 
 	@Value("${esloc.date.view}")
 	private String DATA_FORMAT_VIEW;
+	@Value("${esloc.date.form}")
+	private String DATA_FORMAT_FORM;
 	
 	private ProdutorRepository repository;
 
@@ -65,11 +65,24 @@ public class ProdutorServiceImpl implements ProdutorService {
 	 */
 	@Override
 	public Persona toProdutor(ProdutorDto produtorDto) {
+		String dataNascimento;
+		LocalDate localDateNascimento = null;
+		System.out.println("Nascimento: " + produtorDto.getDataNascimento().toString());
+		System.out.println("Formato: " + DATA_FORMAT_VIEW);
+
+		try {
+			localDateNascimento = LocalDate.parse(produtorDto.getDataNascimento(),DateTimeFormatter.ofPattern(DATA_FORMAT_FORM));
+			
+		}catch(java.time.format.DateTimeParseException e) {
+			dataNascimento = produtorDto.getDataNascimento();
+			localDateNascimento.parse(dataNascimento, DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW));
+		}
+		
 		return Persona.builder()
 				.nome(produtorDto.getNome())
 				.cpf(produtorDto.getCpf())
 				.fone(produtorDto.getFone())
-				.dataNascimento(LocalDate.parse(produtorDto.getDataNascimento(), DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW)))
+				.dataNascimento(localDateNascimento)//LocalDate.parse(produtorDto.getDataNascimento()))//LocalDate.parse(produtorDto.getDataNascimento(), DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW)))
 				.build();
 	}
 	
@@ -84,12 +97,20 @@ public class ProdutorServiceImpl implements ProdutorService {
 		if(persona == null) {
 			return null;
 		}
+
+		String dataDeNascimento = null;
+		try {
+			dataDeNascimento = String.valueOf(persona.getDataNascimento().format(DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW)));
+		}catch(Exception e) {
+			
+		}
+		
 		return ProdutorDto.builder()
 				.id(persona.getId())
 				.nome(persona.getNome())
 				.cpf(persona.getCpf())
 				.fone(persona.getFone())
-				.dataNascimento(String.valueOf(persona.getDataNascimento().format(DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW))))
+				.dataNascimento(dataDeNascimento)
 				.build();
 	}
 

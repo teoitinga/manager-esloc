@@ -3,8 +3,6 @@ package com.jp.eslocapi.api.dto;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +27,6 @@ public class ProdutorDto {
 	
 	@NotNull(message = "Deve informar a data de nascimento.")
 	@NotEmpty(message = "Deve informar a data de nascimento.")
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private String dataNascimento;
 
 }

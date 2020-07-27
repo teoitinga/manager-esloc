@@ -47,7 +47,7 @@ public class ProdutorController {
 	@ApiOperation("Registra um novo produtor")
 	@ApiResponses({
 		@ApiResponse(code=201, message = ""),
-		@ApiResponse(code=500, message = "")
+		@ApiResponse(code=404, message = "")
 	})
 	public ProdutorDto create( @RequestBody @Valid ProdutorDto dto) {
 		

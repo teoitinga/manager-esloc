@@ -15,4 +15,6 @@ public interface TypeServiceService {
 	List<ServicoDto> findAll();
 	
 	boolean isContaining();
+
+	void deleteAll();
 }

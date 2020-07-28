@@ -55,4 +55,9 @@ public class TypeServiceServicesImpl implements TypeServiceService{
 		return this.repository.findAll().size() > 0 ? true : false;
 	}
 
+	@Override
+	public void deleteAll() {
+		this.repository.deleteAll();
+	}
+
 }

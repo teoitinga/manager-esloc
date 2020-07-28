@@ -49,12 +49,28 @@ public class EslocApiApplication extends SpringBootServletInitializer {
 
 		private void createServicesIfNotExists() {
 			List<TipoServico> services = new ArrayList<>();
-
+			//service.deleteAll();
 			TipoServico srv;
 			
 			if(!service.isContaining()) {
-				srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("Elaboração de projeto de crédito rural")
-						.tipo("CR")
+				srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("Banco do Brasil - Elaboração de projeto de crédito rural invstimento")
+						.tipo("CRINBB")
+						.valorReferencia(new BigDecimal("150"))
+						.build();
+				services.add(srv);
+				srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("Banco do Brasil - Elaboração de projeto de crédito rural custeio")
+						.tipo("CRCSBB")
+						.valorReferencia(new BigDecimal("150"))
+						.build();
+				services.add(srv);
+				
+				srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("Sicoob - Elaboração de projeto de crédito rural invstimento")
+						.tipo("CRINSC")
+						.valorReferencia(new BigDecimal("150"))
+						.build();
+				services.add(srv);
+				srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("Sicoob - Elaboração de projeto de crédito rural custeio")
+						.tipo("CRCSSC")
 						.valorReferencia(new BigDecimal("150"))
 						.build();
 				services.add(srv);
@@ -89,6 +105,36 @@ public class EslocApiApplication extends SpringBootServletInitializer {
 						.build();
 				services.add(srv);
 				
+				srv = TipoServico.builder().tempoEstimado(10).descricaoTipo("Envio de amostra de solo")
+						.tipo("AMSL")
+						.valorReferencia(new BigDecimal("25"))			
+						.build();
+				services.add(srv);
+				
+				srv = TipoServico.builder().tempoEstimado(1).descricaoTipo("Interpretação de análise de solo")
+						.tipo("AMIS")
+						.valorReferencia(new BigDecimal("0"))			
+						.build();
+				services.add(srv);
+				
+				srv = TipoServico.builder().tempoEstimado(1).descricaoTipo("Cadastro de uso insignificante")
+						.tipo("AGCAD")
+						.valorReferencia(new BigDecimal("0"))			
+						.build();
+				services.add(srv);
+				
+				srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("PNAE - Elaboração de projeto")
+						.tipo("PNAE")
+						.valorReferencia(new BigDecimal("0"))			
+						.build();
+				services.add(srv);
+				
+				srv = TipoServico.builder().tempoEstimado(7).descricaoTipo("PAA - Elaboração de projeto")
+						.tipo("PAA")
+						.valorReferencia(new BigDecimal("0"))			
+						.build();
+				services.add(srv);
+				
 				services.forEach(servicos-> service.save(servicos));				
 			}
 
@@ -98,6 +144,8 @@ public class EslocApiApplication extends SpringBootServletInitializer {
 			List<DocumentType> documentType = new ArrayList<>();
 			
 			DocumentType dt;
+
+			
 			if(!documentTypeService.isContaining()) {
 				dt = DocumentType.builder().abreviatura("CRT").descricao("Certidão da propriedade")
 						.informacoes("Refere-se a emissão de certidão com número de matrícula.")

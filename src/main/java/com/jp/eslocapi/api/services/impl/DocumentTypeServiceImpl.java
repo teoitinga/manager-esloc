@@ -36,4 +36,10 @@ public class DocumentTypeServiceImpl implements DocumentTypeService{
 		return this.repository.findAll().size() >= 0 ? true : false;
 	}
 
+	@Override
+	public void deleteAll() {
+		this.repository.deleteAll();
+		
+	}
+
 }

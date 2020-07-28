@@ -14,4 +14,6 @@ public interface DocumentTypeService {
 	
 	boolean isContaining();
 
+	void deleteAll();
+
 }

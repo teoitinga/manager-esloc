@@ -69,13 +69,15 @@ public class Atendimento {
 	private BigDecimal valorDoServico;
 	
 	@Column
-	private Boolean emitiuDAE;
+	@Enumerated(EnumType.STRING)
+	private EnumYesNo emitiuDAE;
 	
 	@Column
 	private LocalDate datapgtoDAE;
 
 	@Column
-	private Boolean emitiuART;
+	@Enumerated(EnumType.STRING)
+	private EnumYesNo emitiuART;
 
 	@Column
 	private LocalDate datapgtoART;	

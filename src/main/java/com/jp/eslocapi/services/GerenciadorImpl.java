@@ -19,6 +19,7 @@ import com.jp.eslocapi.api.dto.Tarefa;
 import com.jp.eslocapi.api.dto.TarefaPostDto;
 import com.jp.eslocapi.api.entities.Atendimento;
 import com.jp.eslocapi.api.entities.EnumStatus;
+import com.jp.eslocapi.api.entities.EnumYesNo;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.entities.TipoServico;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
@@ -109,25 +110,27 @@ public class GerenciadorImpl implements Gerenciador{
 		fileName.append(" -");
 		fileName.append(nomeDoProdutor);
 		
-
 		
 		//4a Parte: SERVICOS
 		for(int i = 0; i< servicosPrestados.size();i++) {
 			fileName.append(" -");
 			fileName.append(servicosPrestados.get(i).getTiposervico().getTipo());			
 
+			EnumYesNo emitiuArt = servicosPrestados.get(i).getEmitiuART();
+			EnumYesNo emitiuDae = servicosPrestados.get(i).getEmitiuDAE();
+			
 			//Confere se é maior que ZERO, caso positivo insere o vallor na pasta
 			if(servicosPrestados.get(i).getValorDoServico().compareTo(BigDecimal.ZERO) > 0) {
 				fileName.append(" -");
 				fileName.append(servicosPrestados.get(i).getValorDoServico());			
 			}			
 			//Se não for emitido o DAE, é necessário informar na pasta 
-			if(!servicosPrestados.get(i).getEmitiuDAE()) {
+			if(emitiuDae != EnumYesNo.SIM) {
 				fileName.append(" -");
 				fileName.append("DAE");			
 			}
 			//Se não for emitida a ART, é necessário informar na pasta 
-			if(!servicosPrestados.get(i).getEmitiuART()) {
+			if(emitiuArt != EnumYesNo.SIM) {
 				fileName.append(" -");
 				fileName.append("ART");			
 			}
@@ -145,14 +148,19 @@ public class GerenciadorImpl implements Gerenciador{
 	}
 
 	private Atendimento transformadtoEmAtendimento(DetailServiceDto dto) {
-		
-		BigDecimal valorDoServico = new BigDecimal(dto.getValorDoServico());
+		BigDecimal valorDoServico;
+		try {
+			valorDoServico = new BigDecimal(dto.getValorDoServico());
+			
+		}catch (java.lang.NumberFormatException e) {
+			valorDoServico = BigDecimal.ZERO;
+		}
 		
 		String tarefaDescricao = dto.getTarefaDescricao();
 		
-		Boolean emitiuDAE = dto.getEmitiuDAE().equals("true") ? true : false;
+		EnumYesNo emitiuDAE = dto.getEmitiuDAE().equals("true") ? EnumYesNo.SIM : EnumYesNo.NAO;
 		
-		Boolean emitiuART = dto.getEmitiuART().equals("true") ? true : false;
+		EnumYesNo emitiuART = dto.getEmitiuART().equals("true") ? EnumYesNo.SIM : EnumYesNo.NAO;
 		
 		//Configura o Emissor
 		Persona emissor = null;
@@ -163,7 +171,7 @@ public class GerenciadorImpl implements Gerenciador{
 		log.info("responsavel {}", responsavel);
 		
 		//obtem o objeto de Tipo de serviço
-		TipoServico tipoDeServico = this.typeServiceService.getByType(dto.getTipoServico()).orElseThrow(() -> new ServiceNotFound());
+		TipoServico tipoDeServico = this.typeServiceService.getByType(dto.getTipoServico().toUpperCase()).orElseThrow(() -> new ServiceNotFound());
 		log.info("tipoDeServico {}", tipoDeServico);
 		
 		LocalDate dataDeConclusao = LocalDate.now().plusDays(tipoDeServico.getTempoEstimado());

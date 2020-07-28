@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jp.eslocapi.api.entities.DocumentType;
-import com.jp.eslocapi.services.DocumentTypeService;
+import com.jp.eslocapi.api.services.DocumentTypeService;
 
 @RestController
 @RequestMapping("api/v1/documents")

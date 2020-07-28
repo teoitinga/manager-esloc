@@ -24,8 +24,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
+import com.jp.eslocapi.api.services.ProdutorService;
 import com.jp.eslocapi.exceptions.BusinessException;
-import com.jp.eslocapi.services.ProdutorService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")

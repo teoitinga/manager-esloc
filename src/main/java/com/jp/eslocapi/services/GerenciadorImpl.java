@@ -1,15 +1,18 @@
-package com.jp.eslocapi.api.services.impl;
+package com.jp.eslocapi.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.jp.eslocapi.Configuration;
 import com.jp.eslocapi.api.dto.DetailServiceDto;
 import com.jp.eslocapi.api.dto.ProdutoPostMinDto;
 import com.jp.eslocapi.api.dto.Tarefa;
@@ -20,10 +23,11 @@ import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.entities.TipoServico;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.api.exceptions.ServiceNotFound;
-import com.jp.eslocapi.api.services.Gerenciador;
-import com.jp.eslocapi.services.AtendimentoService;
-import com.jp.eslocapi.services.TypeServiceService;
-import com.jp.eslocapi.util.Gerenciamento;
+import com.jp.eslocapi.api.services.AtendimentoService;
+import com.jp.eslocapi.api.services.TypeServiceService;
+import com.jp.eslocapi.api.services.impl.ProdutorServiceImpl;
+import com.jp.eslocapi.util.FileUtil;
+import com.jp.eslocapi.util.exceptions.DoNotCreateFolder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +35,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GerenciadorImpl implements Gerenciador{
 
+	@Value("${servicos.atendimentos.raiz}")
+	private static String PATH_ROOT;
+
+	@Value("${esloc.date.folder}")
+	private static String DATA_FORMAT_FOLDER;
+	
 	@Autowired
 	private ProdutorServiceImpl produtorService;
 	
@@ -39,10 +49,13 @@ public class GerenciadorImpl implements Gerenciador{
 	
 	@Autowired
 	private AtendimentoService atendimentoService;
+	
+	@Autowired
+	private Configuration folderDate;
 
 	@Autowired
-	private Gerenciamento gerenciamentoPasta;
-
+	private FileUtil fileUtil;
+	
 	@Override
 	public void buildTarefa(TarefaPostDto dto) {
 		Tarefa tarefa = null;
@@ -52,13 +65,12 @@ public class GerenciadorImpl implements Gerenciador{
 		//obtem a lista de pessoal atendido
 		//Para cada produtor sera gerada uma tarefa com os dados informados
 		List<Persona> produtores = obtemProdutores(dto.getProdutorInfo());
-		log.info("Produtores a registrar {}", produtores);
-		Persona produtorSolicitante = produtores.get(0);
+
 		//obtem a lista de servicos prestados
 		List<Atendimento> servicosPrestados = obtemListaDeAtendimentos(dto.getTipoServico());
-		log.info("Atendimentos a registrar {}", dto.getTipoServico().toString());
 		
-		//Constroi a tarefa e registra no banco de dados
+		String nomeDaPasta = resolveNomeDaPasta(produtores, servicosPrestados);
+		
 		tarefa = Tarefa.builder()
 				.atendimentos(servicosPrestados)
 				.produtores(produtores)
@@ -66,8 +78,63 @@ public class GerenciadorImpl implements Gerenciador{
 				.build();
 		
 		tarefaBuilder(tarefa);
-		this.gerenciamentoPasta.createFolderToAtendimento(servicosPrestados, produtorSolicitante);
 		
+		//CRIA a pasta com o nome e caminho definido
+		try {
+			this.fileUtil.createFolder(nomeDaPasta);
+		} catch (DoNotCreateFolder e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	private String resolveNomeDaPasta(List<Persona> produtores, List<Atendimento> servicosPrestados) {
+		StringBuilder fileName = new  StringBuilder();
+		
+		log.info("Produtor selecionado: {}", produtores.get(0));
+		log.info("Servicos : {} ", servicosPrestados);
+		//Formato: ANO-MES-DIA -NOME_DO_CLIENTE -CODIGO_DE_BUSCA -SERV_01 -VL_SERV_01 -SERV_02 -VL_SERV_02 -DAE -ART
+		//DAE E ART somente se foi emitida e não quitada.
+		//1a Parte: DATA
+		//String dataAtual = LocalDate.now().format(folderDate.folderDateTimeFormater());
+		//fileName.append(dataAtual);
+		//3a Parte: -CODIGO_DE_BUSCA COMPOSTA PELO CPFDIAMESANO
+
+		fileName.append(LocalDateTime.now().format(folderDate.keyDateTimeFormater()));		
+		fileName.append(produtores.get(0).getCpf());
+
+		//2a Parte: NOME_DO_CLIENTE
+		String nomeDoProdutor = produtores.get(0).getNome().toUpperCase();
+		fileName.append(" -");
+		fileName.append(nomeDoProdutor);
+		
+
+		
+		//4a Parte: SERVICOS
+		for(int i = 0; i< servicosPrestados.size();i++) {
+			fileName.append(" -");
+			fileName.append(servicosPrestados.get(i).getTiposervico().getTipo());			
+
+			//Confere se é maior que ZERO, caso positivo insere o vallor na pasta
+			if(servicosPrestados.get(i).getValorDoServico().compareTo(BigDecimal.ZERO) > 0) {
+				fileName.append(" -");
+				fileName.append(servicosPrestados.get(i).getValorDoServico());			
+			}			
+			//Se não for emitido o DAE, é necessário informar na pasta 
+			if(!servicosPrestados.get(i).getEmitiuDAE()) {
+				fileName.append(" -");
+				fileName.append("DAE");			
+			}
+			//Se não for emitida a ART, é necessário informar na pasta 
+			if(!servicosPrestados.get(i).getEmitiuART()) {
+				fileName.append(" -");
+				fileName.append("ART");			
+			}
+			
+		}
+		log.info("Criando pasta: {}", fileName.toString());
+		return fileName.toString();
 	}
 
 	private List<Atendimento> obtemListaDeAtendimentos(List<DetailServiceDto> tipoServico) {
@@ -79,19 +146,13 @@ public class GerenciadorImpl implements Gerenciador{
 
 	private Atendimento transformadtoEmAtendimento(DetailServiceDto dto) {
 		
-		Atendimento atendimento = null;
 		BigDecimal valorDoServico = new BigDecimal(dto.getValorDoServico());
-		log.info("valorDoServico {}", valorDoServico);
 		
 		String tarefaDescricao = dto.getTarefaDescricao();
-		log.info("tarefaDescricao {}", tarefaDescricao);
 		
-		log.info("emitiuDAE- inline {}", dto.getEmitiuDAE());
 		Boolean emitiuDAE = dto.getEmitiuDAE().equals("true") ? true : false;
-		log.info("emitiuDAE {}", emitiuDAE);
 		
 		Boolean emitiuART = dto.getEmitiuART().equals("true") ? true : false;
-		log.info("emitiuART {}", emitiuART);
 		
 		//Configura o Emissor
 		Persona emissor = null;
@@ -107,7 +168,7 @@ public class GerenciadorImpl implements Gerenciador{
 		
 		LocalDate dataDeConclusao = LocalDate.now().plusDays(tipoDeServico.getTempoEstimado());
 		
-		return atendimento.builder()
+		return Atendimento.builder()
 				.tiposervico(tipoDeServico)
 				.valorDoServico(valorDoServico)
 				.tarefaDescricao(tarefaDescricao)
@@ -123,21 +184,16 @@ public class GerenciadorImpl implements Gerenciador{
 	//Registra os dados da Tarefa e retorn a primeira em caso de sucesso
 	@Transactional
 	private void tarefaBuilder(Tarefa tarefa) {
-		
-		Tarefa tarefaBuild = null;
 		//prepara os campos necessários
 		
 		//produtores registrados no banco de dados
 		List<Persona> savedProdutores = tarefa.getProdutores();
 
-		
-		//Atndimentos
+		//Atendimentos
 		List<Atendimento> atendimentos = tarefa.getAtendimentos();
-		log.info("Serviços solicitados {}", atendimentos);
 		
 		//observações
 		String obs = tarefa.getObervacao();
-		log.info("Observções {}", obs);
 		
 		savedProdutores.forEach(produtor->registraAtendimentoPorServico(atendimentos, produtor, obs));
 
@@ -152,7 +208,7 @@ public class GerenciadorImpl implements Gerenciador{
 	private void registraAtendimento(Atendimento atendimento, Persona produtor, String obs) {
 		Atendimento atd = new Atendimento();
 		Persona prd = produtor;
-		atd = atendimento.builder()
+		atd = Atendimento.builder()
 				.tiposervico(atendimento.getTiposervico())
 				.valorDoServico(atendimento.getValorDoServico())
 				.tarefaDescricao(atendimento.getTarefaDescricao())
@@ -162,6 +218,7 @@ public class GerenciadorImpl implements Gerenciador{
 				.statusTarefa(atendimento.getStatusTarefa())
 				.emissor(atendimento.getEmissor())
 				.responsavel(atendimento.getResponsavel())
+				.statusTarefa(EnumStatus.INICIADA)
 				.observacoes(obs)
 				.produtor(prd)
 				.build();
@@ -169,7 +226,7 @@ public class GerenciadorImpl implements Gerenciador{
 		this.atendimentoService.save(atd);
 		//define como null para evitar atualizaçoes que não sejam necessárias
 		atd = null;
-		produtor = null;
+		prd = null;
 
 	}
 

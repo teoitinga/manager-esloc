@@ -1,4 +1,4 @@
-package com.jp.eslocapi.api.services;
+package com.jp.eslocapi.services;
 
 import com.jp.eslocapi.api.dto.TarefaPostDto;
 

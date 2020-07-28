@@ -23,8 +23,8 @@ import com.jp.eslocapi.api.entities.EnumType;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.exceptions.ApiErrors;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
+import com.jp.eslocapi.api.services.ProdutorService;
 import com.jp.eslocapi.exceptions.BusinessException;
-import com.jp.eslocapi.services.ProdutorService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

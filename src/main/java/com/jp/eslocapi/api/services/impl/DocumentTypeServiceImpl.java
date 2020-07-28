@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.jp.eslocapi.api.entities.DocumentType;
 import com.jp.eslocapi.api.exceptions.DocumentNotFoundException;
 import com.jp.eslocapi.api.repositories.DocumentTypeRepository;
-import com.jp.eslocapi.services.DocumentTypeService;
+import com.jp.eslocapi.api.services.DocumentTypeService;
 
 @Service
 public class DocumentTypeServiceImpl implements DocumentTypeService{

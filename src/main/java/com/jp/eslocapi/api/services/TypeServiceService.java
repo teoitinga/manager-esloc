@@ -1,4 +1,4 @@
-package com.jp.eslocapi.services;
+package com.jp.eslocapi.api.services;
 
 import java.util.List;
 import java.util.Optional;

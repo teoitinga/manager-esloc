@@ -12,8 +12,8 @@ import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Persona;
 import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.api.repositories.ProdutorRepository;
+import com.jp.eslocapi.api.services.ProdutorService;
 import com.jp.eslocapi.exceptions.BusinessException;
-import com.jp.eslocapi.services.ProdutorService;
 
 @Service
 public class ProdutorServiceImpl implements ProdutorService {

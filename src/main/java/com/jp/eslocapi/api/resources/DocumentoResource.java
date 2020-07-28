@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.jp.eslocapi.services.DocumentTypeService;
+import com.jp.eslocapi.api.services.DocumentTypeService;
 import com.jp.eslocapi.util.FileUtil;
-import com.jp.eslocapi.util.Gerenciamento;
 
 @RestController
 @RequestMapping("api/v1/upload")
@@ -17,9 +16,6 @@ public class DocumentoResource {
 
 	@Autowired
 	private FileUtil file;
-	
-	@Autowired
-	private Gerenciamento gerenciamento;
 	
 	@Autowired
 	private DocumentTypeService documentTypeService;

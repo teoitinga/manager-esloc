@@ -13,7 +13,7 @@ import com.jp.eslocapi.api.dto.ServicoDto;
 import com.jp.eslocapi.api.entities.TipoServico;
 import com.jp.eslocapi.api.exceptions.ServiceNotFound;
 import com.jp.eslocapi.api.repositories.TypeServiceRepository;
-import com.jp.eslocapi.services.TypeServiceService;
+import com.jp.eslocapi.api.services.TypeServiceService;
 
 @Service
 public class TypeServiceServicesImpl implements TypeServiceService{

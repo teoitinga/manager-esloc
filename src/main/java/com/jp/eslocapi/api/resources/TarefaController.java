@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jp.eslocapi.api.dto.TarefaPostDto;
-import com.jp.eslocapi.api.services.Gerenciador;
+import com.jp.eslocapi.services.Gerenciador;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("api/v1/tarefas")
+@Slf4j
 public class TarefaController {
 	
 	@Autowired
@@ -23,7 +26,7 @@ public class TarefaController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public void create( @RequestBody @Valid TarefaPostDto dto) {
-
+		log.info("Recebindo: {}",dto.getProdutorInfo());
 		this.gerenciador.buildTarefa(dto);
 		
 	}

@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 
 import com.jp.eslocapi.api.entities.DocumentType;
 import com.jp.eslocapi.api.entities.TipoServico;
-import com.jp.eslocapi.services.DocumentTypeService;
-import com.jp.eslocapi.services.TypeServiceService;
+import com.jp.eslocapi.api.services.DocumentTypeService;
+import com.jp.eslocapi.api.services.TypeServiceService;
 
 @SpringBootApplication
 public class EslocApiApplication extends SpringBootServletInitializer {

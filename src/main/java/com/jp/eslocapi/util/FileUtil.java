@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.jp.eslocapi.util.exceptions.DoNotCreateFolder;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class FileUtil {
+	
 	@Value("${servicos.atendimentos.raiz}")
 	private String raiz;
 	
@@ -33,13 +36,16 @@ public class FileUtil {
 			throw new RuntimeException("Problemas na tentativa de salvar arquivo.", e);
 		}		
 	}
-	public void createFolder(String folder) {
-		Path diretorioPath = Paths.get(this.raiz, folder);
+	//Cria uma pasta com o nome informado. A pasta é criada no diretorio raiz do sistema
+	public void createFolder(String folderName) throws DoNotCreateFolder {
 
+		Path diretorioPath = Paths.get(this.raiz, folderName);
 		try {
 			Files.createDirectories(diretorioPath);
+			
 		} catch (IOException e) {
-			throw new RuntimeException("Problemas na tentativa de criar pasta.", e);
+			
+			throw new DoNotCreateFolder();
 		}		
 	}
 	

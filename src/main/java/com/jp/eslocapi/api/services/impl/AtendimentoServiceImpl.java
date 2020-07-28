@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.jp.eslocapi.api.entities.Atendimento;
 import com.jp.eslocapi.api.repositories.AtendimentosRepository;
-import com.jp.eslocapi.services.AtendimentoService;
+import com.jp.eslocapi.api.services.AtendimentoService;
 
 @Service
 public class AtendimentoServiceImpl implements AtendimentoService{

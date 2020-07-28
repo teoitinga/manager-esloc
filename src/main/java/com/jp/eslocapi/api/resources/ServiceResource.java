@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jp.eslocapi.api.dto.ServicoDto;
-import com.jp.eslocapi.services.TypeServiceService;
+import com.jp.eslocapi.api.services.TypeServiceService;
 
 @RestController
 @RequestMapping("api/v1/services")

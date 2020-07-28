@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -82,6 +84,7 @@ public class Atendimento {
 	private LocalDateTime dataFinalizada;
 	
 	@Column
+	@Enumerated(EnumType.STRING)
 	private EnumStatus statusTarefa;
 	
 	@Column

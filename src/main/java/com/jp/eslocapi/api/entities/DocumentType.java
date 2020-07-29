@@ -2,8 +2,6 @@ package com.jp.eslocapi.api.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -19,15 +17,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table
 public class DocumentType {
+	//@Column
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//private Long id;
+	
 	@Id
 	@Column
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
 	private String descricao;
 	
+	@Column
 	private String abreviatura;
 
+	@Column
 	private String informacoes;
 	
 }

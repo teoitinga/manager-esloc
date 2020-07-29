@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -28,15 +26,15 @@ import lombok.NoArgsConstructor;
 @Table
 public class Persona {
 
-	@Id
-	@Column
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	//@Column
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//private Long id;
 	
 	@Column
 	@NotNull(message = "Não é possível fazer um registro informar o nome")
 	private String nome;
 	
+	@Id
 	@Column
 	@CPF
 	@NotNull(message = "Não é possível fazer um registro sem o cpf")

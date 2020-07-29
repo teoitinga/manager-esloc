@@ -106,7 +106,6 @@ public class ProdutorServiceImpl implements ProdutorService {
 		}
 		
 		return ProdutorDto.builder()
-				.id(persona.getId())
 				.nome(persona.getNome())
 				.cpf(persona.getCpf())
 				.fone(persona.getFone())
@@ -145,6 +144,11 @@ public class ProdutorServiceImpl implements ProdutorService {
 				.cpf(produtorMin.getCpf())
 				.build();
 		return this.repository.save(produtor);
+	}
+
+	@Override
+	public Persona getProdutorByCpf(String cpf) {
+		return repository.findByCpf(cpf).orElseThrow(()-> new ProdutorNotFound());
 	}
 
 

@@ -25,4 +25,6 @@ public interface ProdutorService {
 	Persona toProdutor(ProdutoPostMinDto produtoPostMinDto);
 	
 	Persona saveMin(ProdutoPostMinDto produtorMin);
+
+	Persona getProdutorByCpf(String cpf);
 }

@@ -105,18 +105,18 @@ public class ProdutorController {
 	}
 	@PutMapping("{id}")
 	@ResponseStatus(HttpStatus.OK)
-	@ApiOperation("Atualiza registro de produtor pelo ID informado")
+	@ApiOperation("Atualiza registro de produtor pelo CPF informado")
 	@ApiResponses({
 		@ApiResponse(code=200, message = ""),
 		@ApiResponse(code=404, message = "")
 	})
-	public ProdutorDto updadeProdutor(@PathVariable Long id, @RequestBody @Valid ProdutorDto dto) {
+	public ProdutorDto updadeProdutor(@PathVariable String cpf, @RequestBody @Valid ProdutorDto dto) {
 		
 		ProdutorDto response;
 		
-		Persona toUpdated = service.getById(id);
+		Persona toUpdated = service.getProdutorByCpf(cpf);//.getById(id);
 		
-		dto.setId(toUpdated.getId());
+		//dto.setId(toUpdated.getCpf());
 		
 		response = service.update(dto);
 		

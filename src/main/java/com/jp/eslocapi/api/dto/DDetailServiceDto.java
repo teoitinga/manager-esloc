@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetailServiceDto {
+public class DDetailServiceDto {
 	
 	private String tipoServico;
 	
@@ -19,6 +19,5 @@ public class DetailServiceDto {
 	private String emitiuDAE;
 	
 	private String emitiuART;
-	
 	
 }

@@ -19,8 +19,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -57,6 +55,9 @@ public class Atendimento {
 	
 	@Column
 	private LocalDateTime dataCadastro;
+
+	@Column
+	private LocalDate dataAtendimento;
 	
 	@Column
 	private LocalDateTime dataAtualizacao;

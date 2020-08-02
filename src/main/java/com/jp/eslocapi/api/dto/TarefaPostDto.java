@@ -17,8 +17,11 @@ public class TarefaPostDto {
 	@NotEmpty(message = "Você deve informar o cpf do solicitante.")
 	private List<ProdutoPostMinDto> produtorInfo;
 	
-	private String observacoes;
 	
 	@NotEmpty(message = "Você deve informar pelo menos um serviço.")
-	private List<DetailServiceDto> tipoServico;
+	private List<AtendimentoBasicDto> tipoServico;
+	
+	private String dataDoAtendimento;
+
+	private String observacoes;
 }

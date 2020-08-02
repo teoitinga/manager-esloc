@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jp.eslocapi.Configuration;
 import com.jp.eslocapi.api.dto.AtendimentoBasicDto;
+import com.jp.eslocapi.api.dto.AtendimentosBasicGetDto;
 import com.jp.eslocapi.api.entities.Atendimento;
 import com.jp.eslocapi.api.repositories.AtendimentosRepository;
 import com.jp.eslocapi.api.services.AtendimentoService;
@@ -27,18 +30,39 @@ public class AtendimentoServiceImpl implements AtendimentoService{
 	}
 
 	@Override
-	public List<AtendimentoBasicDto> findAll() {
-		List<Atendimento> atd = this.repository.findAll();
-		return atd.stream().map(atendimento->toAtendimentoBasicDo(atendimento)).collect(Collectors.toList());
+	public List<AtendimentosBasicGetDto> findAll(Pageable pageable) {
+		Page<Atendimento> atd = this.repository.findAll(pageable);
+		return atd.stream().map(atendimento->toAtendimentosBasicGetDto(atendimento)).collect(Collectors.toList());
 	}
 
 	private AtendimentoBasicDto toAtendimentoBasicDo(Atendimento atendimento) {
+		String dataDoAtendimento = null;
+		try {
+			dataDoAtendimento = atendimento.getDataAtendimento().format(dateFormat.viewDateTimeFormater());
+		}catch (NullPointerException e) {
+			dataDoAtendimento = null;
+		}
 		return AtendimentoBasicDto.builder()
-				.cadastro(atendimento.getDataCadastro().format(dateFormat.viewDateTimeFormater()))
+				.descricaoDoServico(atendimento.getTarefaDescricao())
+				.CodDoServico(atendimento.getTiposervico().getDescricaoTipo())
+				.build();
+	}
+	private AtendimentosBasicGetDto toAtendimentosBasicGetDto(Atendimento atendimento) {
+		String dataDoAtendimento = null;
+		try {
+			dataDoAtendimento = atendimento.getDataAtendimento().format(dateFormat.viewDateTimeFormater());
+		}catch (NullPointerException e) {
+			dataDoAtendimento = null;
+		}
+		return AtendimentosBasicGetDto.builder()
+				.id(String.valueOf(atendimento.getId()))
+				.dataDoAtendimento(dataDoAtendimento )
 				.produtor(atendimento.getProdutor().getNome())
-				.descricao(atendimento.getTarefaDescricao())
+				.descricaoDoServico(atendimento.getTarefaDescricao())
 				.observacao(atendimento.getObservacoes())
-				.servico(atendimento.getTiposervico().getDescricaoTipo())
+				.emitiuArt(atendimento.getEmitiuART().toString())
+				.emitiuDae(atendimento.getEmitiuDAE().toString())
+				.CodDoServico(atendimento.getTiposervico().getDescricaoTipo())
 				.build();
 	}
 

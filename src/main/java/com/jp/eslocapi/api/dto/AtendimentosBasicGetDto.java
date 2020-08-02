@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AtendimentoBasicDto {
+public class AtendimentosBasicGetDto {
 	private String id;
+	private String produtor;
+	private String dataDoAtendimento;
 	private String CodDoServico;
 	private String descricaoDoServico;
-	private String valorDoServico;
 	private String emitiuDae;
 	private String emitiuArt;
+	private String observacao;
 
 }

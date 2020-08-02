@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.br.CPF;
@@ -26,18 +28,18 @@ import lombok.NoArgsConstructor;
 @Table
 public class Persona {
 
-	//@Column
-	//@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//private Long id;
-	
 	@Column
 	@NotNull(message = "Não é possível fazer um registro informar o nome")
+	@NotEmpty(message = "Não é possível fazer um registro sem informar o nome")
+	@NotBlank(message = "Não é possível fazer um registro sem informar o nome")
 	private String nome;
 	
 	@Id
 	@Column
 	@CPF
-	@NotNull(message = "Não é possível fazer um registro sem o cpf")
+	@NotNull(message = "Não é possível fazer um registro sem informar o cpf")
+	@NotEmpty(message = "Não é possível fazer um registro sem informar o cpf")
+	@NotBlank(message = "Não é possível fazer um registro sem informar o cpf")
 	private String cpf;
 	
 	@Column

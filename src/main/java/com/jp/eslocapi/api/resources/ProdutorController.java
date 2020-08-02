@@ -114,9 +114,7 @@ public class ProdutorController {
 		
 		ProdutorDto response;
 		
-		Persona toUpdated = service.getProdutorByCpf(cpf);//.getById(id);
-		
-		//dto.setId(toUpdated.getCpf());
+		Persona toUpdated = service.getProdutorByCpf(cpf);
 		
 		response = service.update(dto);
 		
@@ -124,31 +122,5 @@ public class ProdutorController {
 		
 	}
 	
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ApiErrors handleValidationsException(MethodArgumentNotValidException ex) {
-
-		BindingResult resultErrors = ex.getBindingResult();
-		
-		return new ApiErrors(resultErrors);
-	}
-	@ExceptionHandler(BusinessException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ApiErrors handleBusinessException(BusinessException ex) {
-		
-		return new ApiErrors(ex);
-	}
-	@ExceptionHandler(ProdutorNotFound.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ApiErrors handleProdutorNotFound(ProdutorNotFound ex) {
-		
-		return new ApiErrors(ex);
-	}
-	@ExceptionHandler(ConstraintViolationException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ApiErrors handleProdutorNotFound(ConstraintViolationException ex) {
-		
-		return new ApiErrors("CPF informado não é válido!");
-	}
 
 }

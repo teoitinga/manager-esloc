@@ -38,9 +38,12 @@ public class FileUtil {
 	}
 	//Cria uma pasta com o nome informado. A pasta é criada no diretorio raiz do sistema
 	public void createFolder(String folderName) throws DoNotCreateFolder {
-
+		log.info("Criando a pasta para o atendimentos {}", folderName);
+		
 		Path diretorioPath = Paths.get(this.raiz, folderName);
 		try {
+			log.info("Criando a pasta para o atendimentos {}", diretorioPath.getFileName());
+			log.info("Criando a pasta para o atendimentos {}", diretorioPath.getParent());
 			Files.createDirectories(diretorioPath);
 			
 		} catch (IOException e) {

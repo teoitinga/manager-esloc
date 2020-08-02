@@ -2,13 +2,15 @@ package com.jp.eslocapi.api.services;
 
 import java.util.List;
 
-import com.jp.eslocapi.api.dto.AtendimentoBasicDto;
+import org.springframework.data.domain.Pageable;
+
+import com.jp.eslocapi.api.dto.AtendimentosBasicGetDto;
 import com.jp.eslocapi.api.entities.Atendimento;
 
 public interface AtendimentoService {
 
 	Atendimento save(Atendimento atendimento);
 
-	List<AtendimentoBasicDto> findAll();
+	List<AtendimentosBasicGetDto> findAll(Pageable pageable);
 
 }

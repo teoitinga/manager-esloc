@@ -2,11 +2,14 @@ package com.jp.eslocapi.api.services.impl;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.jp.eslocapi.Configuration;
 import com.jp.eslocapi.api.dto.ProdutoPostMinDto;
 import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.Persona;
@@ -22,6 +25,9 @@ public class ProdutorServiceImpl implements ProdutorService {
 	private String DATA_FORMAT_VIEW;
 	@Value("${esloc.date.form}")
 	private String DATA_FORMAT_FORM;
+	
+	@Autowired
+	private Configuration folderDate;	
 	
 	private ProdutorRepository repository;
 
@@ -70,14 +76,31 @@ public class ProdutorServiceImpl implements ProdutorService {
 		System.out.println("Nascimento: " + produtorDto.getDataNascimento().toString());
 		System.out.println("Formato: " + DATA_FORMAT_VIEW);
 
+		// tenta obter a data no segundo formato yyyy-MM-dd
 		try {
-			localDateNascimento = LocalDate.parse(produtorDto.getDataNascimento(),DateTimeFormatter.ofPattern(DATA_FORMAT_FORM));
+			localDateNascimento = LocalDate.parse(produtorDto.getDataNascimento(),
+					(this.folderDate.folderDateTimeFormater()));
 			
 		}catch(java.time.format.DateTimeParseException e) {
-			dataNascimento = produtorDto.getDataNascimento();
-			localDateNascimento.parse(dataNascimento, DateTimeFormatter.ofPattern(DATA_FORMAT_VIEW));
+
+		}
+		// tenta obter a data no segundo formato dd/MM/yyyy;
+		try {
+			localDateNascimento = LocalDate.parse(produtorDto.getDataNascimento(),
+					(this.folderDate.viewDateTimeFormater()));
+		}catch(java.time.format.DateTimeParseException e) {
+			
 		}
 		
+		// tenta obter a data no segundo formato ddmmyyyy
+		try {
+			localDateNascimento = LocalDate.parse(produtorDto.getDataNascimento(),
+					(this.folderDate.frontDateTimeFormater()));
+		} catch (DateTimeParseException e) {
+			
+			// se deu erro nas 02 situações então a variável continua null
+			// se a variável é null, antão é setada com a data atual
+		}		
 		return Persona.builder()
 				.nome(produtorDto.getNome())
 				.cpf(produtorDto.getCpf())

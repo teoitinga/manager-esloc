@@ -228,7 +228,19 @@ public class GerenciadorImpl implements Gerenciador {
 	private LocalDate getDateValid(TarefaPostDto dto) {
 		
 		log.info("Data informada: {}", dto.getDataDoAtendimento());
+		String cep = "\\d\\d\\d\\d\\d-\\d\\d\\d";
+		
 		LocalDate dataDoAtendimento = null;
+		// tenta obter a data no segundo formato ddmmyyyy
+		try {
+			dataDoAtendimento = LocalDate.parse(dto.getDataDoAtendimento(),
+					(this.folderDate.frontDateTimeFormater()));
+		} catch (DateTimeParseException e) {
+			
+			// se deu erro nas 02 situações então a variável continua null
+			// se a variável é null, antão é setada com a data atual
+		}
+		
 		// tenta obter a data no formato string convencional
 		try {    
 			dataDoAtendimento = LocalDate.parse(dto.getDataDoAtendimento());

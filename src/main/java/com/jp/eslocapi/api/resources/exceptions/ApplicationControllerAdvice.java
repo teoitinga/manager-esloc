@@ -25,6 +25,14 @@ public class ApplicationControllerAdvice {
 		
 		return new ApiErrors(resultErrors);
 	}
+//	@ExceptionHandler(javax.validation.ConstraintViolationException.class)
+//	@ResponseStatus(HttpStatus.BAD_REQUEST)
+//	public ApiErrors handleConstraintViolationException(javax.validation.ConstraintViolationException ex) {
+//		
+//		Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
+//		
+//		return new ApiErrors(constraintViolations);
+//	}
 	@ExceptionHandler(BusinessException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ApiErrors handleBusinessException(BusinessException ex) {

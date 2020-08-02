@@ -20,11 +20,13 @@ import com.jp.eslocapi.api.dto.TarefaPostDto;
 import com.jp.eslocapi.api.services.AtendimentoService;
 import com.jp.eslocapi.services.Gerenciador;
 
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("api/v1/tarefas")
 @Slf4j
+@Api("Atendimentos")
 public class TarefaController {
 	
 	@Autowired

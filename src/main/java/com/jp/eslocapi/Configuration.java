@@ -17,6 +17,9 @@ public class Configuration {
 
 	@Value("${esloc.date.key}")
 	private String DATA_FORMAT_KEY;// = yyyyMMddhhmm;
+
+	@Value("${esloc.date.front}")
+	private String DATA_FORMAT_FRONT;// = ddMMyyyy;
 	
 	@Bean
 	public DateTimeFormatter folderDateTimeFormater() {
@@ -30,5 +33,10 @@ public class Configuration {
 	@Bean
 	public DateTimeFormatter keyDateTimeFormater() {
 		return DateTimeFormatter.ofPattern(DATA_FORMAT_KEY);
+	}
+	
+	@Bean
+	public DateTimeFormatter frontDateTimeFormater() {
+		return DateTimeFormatter.ofPattern(DATA_FORMAT_FRONT);
 	}
 }

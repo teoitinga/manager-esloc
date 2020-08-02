@@ -3,6 +3,9 @@ package com.jp.eslocapi.api.exceptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
 
 import org.springframework.validation.BindingResult;
 
@@ -26,6 +29,11 @@ public class ApiErrors {
 
 	public ApiErrors(String error) {
 		this.errors = Arrays.asList(error);
+	}
+
+	public ApiErrors(Set<ConstraintViolation<?>> constraintViolations) {
+		this.errors = new ArrayList<>();
+		constraintViolations.stream().map(violation -> this.errors.add(violation.getMessage()));
 	}
 
 	public List<String> getErrors() {

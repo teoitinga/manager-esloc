@@ -1,13 +1,9 @@
 package com.jp.eslocapi.api.resources;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,10 +17,7 @@ import com.jp.eslocapi.api.dto.ProdutorDto;
 import com.jp.eslocapi.api.entities.EnumPermissao;
 import com.jp.eslocapi.api.entities.EnumType;
 import com.jp.eslocapi.api.entities.Persona;
-import com.jp.eslocapi.api.exceptions.ApiErrors;
-import com.jp.eslocapi.api.exceptions.ProdutorNotFound;
 import com.jp.eslocapi.api.services.ProdutorService;
-import com.jp.eslocapi.exceptions.BusinessException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

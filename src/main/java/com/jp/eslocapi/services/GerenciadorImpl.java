@@ -123,7 +123,7 @@ public class GerenciadorImpl implements Gerenciador {
 		//Definie informações para nome da pasta
 		String nomeDaPasta = "";
 		try {
-			nomeDaPasta = resolveNomeDaPasta(produtores, servicosPrestados);
+			nomeDaPasta = resolveNomeDaPasta(servicosPrestados.get(0).getDataAtendimento(), produtores, servicosPrestados);
 
 			tarefa = Tarefa.builder()
 					.atendimentos(servicosPrestados)
@@ -234,20 +234,22 @@ public class GerenciadorImpl implements Gerenciador {
 			dataDoAtendimento = LocalDate.parse(dto.getDataDoAtendimento());
 		} catch (DateTimeParseException e) {
 
+		} catch( NullPointerException ex) {
+			//dataDoAtendimento = LocalDate.now();
 		}
+
 		// tenta obter a data no segundo formato dd/mm/yyyy
 		try {
 			dataDoAtendimento = LocalDate.parse(dto.getDataDoAtendimento(),
 					(this.folderDate.viewDateTimeFormater()));
 		} catch (DateTimeParseException e) {
 			
-		}
-
-		// se deu erro nas 02 situações então a variável continua null
-		// se a variável é null, antão é setada com a data atual
-		if (dataDoAtendimento == null) {
+			// se deu erro nas 02 situações então a variável continua null
+			// se a variável é null, antão é setada com a data atual
+		} catch( NullPointerException ex) {
 			dataDoAtendimento = LocalDate.now();
 		}
+
 		
 		//verifica se o atendimento foi agendado para mais de 10 dias
 		if(dataDoAtendimento.isAfter(LocalDate.now().plusDays(10))) {
@@ -287,7 +289,7 @@ public class GerenciadorImpl implements Gerenciador {
 				.valorDoServico(valorDoServico).observacoes(observacoes).build();
 	}
 	
-	private String resolveNomeDaPasta(List<Persona> produtores, List<Atendimento> servicosPrestados) {
+	private String resolveNomeDaPasta(LocalDate dataDoAtendimento, List<Persona> produtores, List<Atendimento> servicosPrestados) {
 		StringBuilder fileName = new StringBuilder();
 
 		log.info("Produtor selecionado: {}", produtores.get(0));
@@ -300,8 +302,13 @@ public class GerenciadorImpl implements Gerenciador {
 		// LocalDate.now().format(folderDate.folderDateTimeFormater());
 		// fileName.append(dataAtual);
 		// 3a Parte: -CODIGO_DE_BUSCA COMPOSTA PELO CPFDIAMESANO
-
-		fileName.append(LocalDateTime.now().format(folderDate.keyDateTimeFormater()));
+		LocalDateTime dataDoAtendimentoTime = dataDoAtendimento.atTime(0, 0); 
+try {
+	fileName.append(dataDoAtendimentoTime.format(folderDate.keyDateTimeFormater()));
+	
+} catch(java.time.temporal.UnsupportedTemporalTypeException ex) {
+	
+}
 		fileName.append(produtores.get(0).getCpf());
 
 		// 2a Parte: NOME_DO_CLIENTE
